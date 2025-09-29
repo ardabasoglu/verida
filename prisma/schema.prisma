@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SYSTEM_ADMIN
+  ADMIN
+  EDITOR
+  MEMBER
+}
+
+enum ContentType {
+  INFO
+  PROCEDURE
+  ANNOUNCEMENT
+  WARNING
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(MEMBER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts              Account[]
+  sessions              Session[]
+  pages                 Page[]
+  files                 File[]
+  comments              Comment[]
+  activityLogs          ActivityLog[]
+  notifications         Notification[]
+  notificationPrefs     NotificationPreference?
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Page {
+  id          String      @id @default(cuid())
+  title       String
+  content     String?     @db.Text
+  pageType    ContentType
+  authorId    String
+  tags        String[]
+  published   Boolean     @default(true) // Onay olmadan anında yayın
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  author   User      @relation(fields: [authorId], references: [id])
+  files    File[]
+  comments Comment[]
+
+  // Performance indexes for search and filtering
+  @@index([pageType])
+  @@index([authorId])
+  @@index([published])
+  @@index([createdAt])
+  @@index([updatedAt])
+  @@index([pageType, published])
+  @@index([authorId, published])
+  @@index([createdAt, published])
+  @@index([title])
+  @@map("pages")
+}
+
+model File {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String?
+  fileSize     BigInt   // Küçük dosyalar için boyut kontrolü
+  filePath     String
+  uploadedById String
+  pageId       String?
+  createdAt    DateTime @default(now())
+
+  uploadedBy User  @relation(fields: [uploadedById], references: [id])
+  page       Page? @relation(fields: [pageId], references: [id])
+
+  // Performance indexes for file queries
+  @@index([uploadedById])
+  @@index([pageId])
+  @@index([createdAt])
+  @@index([mimeType])
+  @@index([pageId, createdAt])
+  @@map("files")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  pageId    String
+  userId    String
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  // Performance indexes for comment queries
+  @@index([pageId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([pageId, createdAt])
+  @@map("comments")
+}
+
+model ActivityLog {
+  id           String   @id @default(cuid())
+  userId       String
+  action       String
+  resourceType String?
+  resourceId   String?
+  details      Json?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  // Performance indexes for activity log queries
+  @@index([userId])
+  @@index([action])
+  @@index([resourceType])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@map("activity_logs")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String   @db.Text
+  type      String   // 'announcement', 'update', 'comment', etc.
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Performance indexes for notification queries
+  @@index([userId])
+  @@index([read])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  userId               String   @id
+  inAppNotifications   Boolean  @default(true)
+  updatedAt            DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
