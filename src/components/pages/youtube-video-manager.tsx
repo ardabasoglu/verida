@@ -44,39 +44,51 @@ export function YouTubeVideoManager({
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-medium text-foreground">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
           YouTube Videoları ({videos.length}/{maxVideos})
         </h4>
         {canAddMore && (
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+            className="inline-flex items-center gap-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
           >
+            <span>📹</span>
             Video Ekle
           </button>
         )}
       </div>
 
       {videos.length === 0 ? (
-        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-          <div className="text-muted-foreground mb-2">📹</div>
-          <p className="text-sm text-muted-foreground mb-3">
-            Henüz video eklenmemiş
-          </p>
-          {canAddMore && (
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(true)}
-              className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              İlk Videoyu Ekle
-            </button>
-          )}
+        <div className="border-2 border-dashed border-border/50 rounded-xl p-8 text-center bg-muted/20">
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+              <span className="text-2xl">📹</span>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-foreground">
+                Henüz video eklenmemiş
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                YouTube videolarını sayfanıza ekleyerek içeriğinizi zenginleştirin
+              </p>
+            </div>
+            {canAddMore && (
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+              >
+                <span>📹</span>
+                İlk Videoyu Ekle
+              </button>
+            )}
+          </div>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-4">
           {videos.map((video) => (
             <YouTubePreview
               key={video.videoId}

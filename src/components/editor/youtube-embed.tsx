@@ -91,7 +91,7 @@ export function YouTubeEmbedModal({
         <DialogHeader>
           <DialogTitle>YouTube Video Ekle</DialogTitle>
           <DialogDescription>
-            YouTube video URL'sini girin ve videoyu içeriğe ekleyin.
+            YouTube video URL&apos;sini girin ve videoyu içeriğe ekleyin.
           </DialogDescription>
         </DialogHeader>
 
@@ -176,22 +176,32 @@ export function YouTubePreview({
 }: YouTubePreviewProps) {
   return (
     <div
-      className={`border border-border rounded-lg p-3 bg-muted ${className}`}
+      className={`group border-2 border-border/50 rounded-xl p-4 bg-background hover:border-blue-300 hover:shadow-sm transition-all duration-200 ${className}`}
     >
       <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-3 flex-1">
-          <img
-            src={videoInfo.thumbnailUrl}
-            alt="Video thumbnail"
-            className="w-16 h-12 object-cover rounded"
-          />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">YouTube Video</p>
-            <p className="text-xs text-muted-foreground break-all">
+        <div className="flex items-start space-x-4 flex-1">
+          <div className="relative flex-shrink-0">
+            <img
+              src={videoInfo.thumbnailUrl}
+              alt="Video thumbnail"
+              className="w-20 h-15 object-cover rounded-lg shadow-sm"
+            />
+            <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
+              <div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">▶</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-red-600 text-sm">📹</span>
+              <p className="text-sm font-semibold text-foreground">YouTube Video</p>
+            </div>
+            <p className="text-xs text-muted-foreground break-all leading-relaxed">
               {videoInfo.url}
             </p>
             {videoInfo.title && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-foreground font-medium mt-1 line-clamp-2">
                 {videoInfo.title}
               </p>
             )}
@@ -201,10 +211,10 @@ export function YouTubePreview({
           <button
             type="button"
             onClick={onRemove}
-            className="text-red-600 hover:text-red-800 text-sm"
+            className="flex-shrink-0 w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
             title="Videoyu kaldır"
           >
-            ✕
+            <span className="text-sm font-bold">×</span>
           </button>
         )}
       </div>

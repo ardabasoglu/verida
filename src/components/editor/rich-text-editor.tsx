@@ -155,7 +155,7 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4',
+          'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-6 leading-relaxed',
       },
     },
   });
@@ -223,60 +223,78 @@ export default function RichTextEditor({
   }, [editor]);
 
   if (!editor) {
-    return <div className="animate-pulse bg-border h-64 rounded-md"></div>;
+    return (
+      <div className={`rounded-lg border-2 border-border/50 bg-muted/20 ${className}`}>
+        <div className="animate-pulse h-80 flex items-center justify-center">
+          <div className="text-center space-y-3">
+            <div className="w-8 h-8 bg-muted-foreground/20 rounded-full mx-auto animate-bounce"></div>
+            <p className="text-sm font-medium text-muted-foreground">Editor hazırlanıyor...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Don't render until mounted to prevent hydration issues
   if (!isMounted) {
     return (
-      <div className={`border border-border rounded-md ${className}`}>
-        <div className="min-h-[300px] p-4 text-muted-foreground">
-          Editor yükleniyor...
+      <div className={`rounded-lg border-2 border-border/50 bg-muted/20 ${className}`}>
+        <div className="min-h-[320px] p-6 text-muted-foreground flex items-center justify-center">
+          <div className="text-center space-y-3">
+            <div className="animate-pulse w-8 h-8 bg-muted-foreground/20 rounded-full mx-auto"></div>
+            <p className="text-sm font-medium">Editor yükleniyor...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`border border-border rounded-md ${className}`}>
+    <div className={`rounded-lg border-0 overflow-hidden bg-background shadow-sm ${className}`}>
       {/* Toolbar */}
-      <div className="border-b border-border p-2 flex flex-wrap gap-1 bg-muted">
+      <div className="border-b border-border/50 p-4 flex flex-wrap gap-2 bg-muted/30 backdrop-blur-sm">
         {/* Text Formatting */}
-        <div className="flex gap-1 border-r border-border pr-2 mr-2">
+        <div className="flex gap-1 border-r border-border/30 pr-3 mr-3">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-2 rounded hover:bg-border ${
-              editor.isActive('bold') ? 'bg-gray-300' : ''
+            className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm ${
+              editor.isActive('bold') 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="Kalın"
           >
-            <strong>B</strong>
+            <strong className="text-sm font-bold">B</strong>
           </button>
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-2 rounded hover:bg-border ${
-              editor.isActive('italic') ? 'bg-gray-300' : ''
+            className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm ${
+              editor.isActive('italic') 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="İtalik"
           >
-            <em>I</em>
+            <em className="text-sm font-medium">I</em>
           </button>
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={`p-2 rounded hover:bg-border ${
-              editor.isActive('strike') ? 'bg-gray-300' : ''
+            className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm ${
+              editor.isActive('strike') 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="Üstü Çizili"
           >
-            <s>S</s>
+            <s className="text-sm font-medium">S</s>
           </button>
         </div>
 
         {/* Headings */}
-        <div className="flex gap-1 border-r border-border pr-2 mr-2">
+        <div className="flex gap-1 border-r border-border/30 pr-3 mr-3">
           {[1, 2, 3, 4, 5, 6].map((level) => (
             <button
               key={level}
@@ -288,8 +306,10 @@ export default function RichTextEditor({
                   .toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 })
                   .run()
               }
-              className={`p-2 rounded hover:bg-border text-sm ${
-                editor.isActive('heading', { level }) ? 'bg-gray-300' : ''
+              className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm text-xs font-semibold ${
+                editor.isActive('heading', { level }) 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
               title={`Başlık ${level}`}
             >
@@ -299,66 +319,70 @@ export default function RichTextEditor({
         </div>
 
         {/* Lists */}
-        <div className="flex gap-1 border-r border-border pr-2 mr-2">
+        <div className="flex gap-1 border-r border-border/30 pr-3 mr-3">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-2 rounded hover:bg-border ${
-              editor.isActive('bulletList') ? 'bg-gray-300' : ''
+            className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm ${
+              editor.isActive('bulletList') 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="Madde İşaretli Liste"
           >
-            •
+            <span className="text-sm font-bold">•</span>
           </button>
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`p-2 rounded hover:bg-border ${
-              editor.isActive('orderedList') ? 'bg-gray-300' : ''
+            className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm ${
+              editor.isActive('orderedList') 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="Numaralı Liste"
           >
-            1.
+            <span className="text-xs font-semibold">1.</span>
           </button>
         </div>
 
         {/* Media & Links */}
-        <div className="flex gap-1 border-r border-border pr-2 mr-2">
+        <div className="flex gap-1 border-r border-border/30 pr-3 mr-3">
           <button
             type="button"
             onClick={openLinkModal}
-            className="p-2 rounded hover:bg-border"
+            className="p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm text-muted-foreground hover:text-foreground"
             title="Link Ekle"
           >
-            🔗
+            <span className="text-sm">🔗</span>
           </button>
           <button
             type="button"
             onClick={addImage}
-            className="p-2 rounded hover:bg-border"
+            className="p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm text-muted-foreground hover:text-foreground"
             title="Görsel Ekle"
           >
-            🖼️
+            <span className="text-sm">🖼️</span>
           </button>
           <button
             type="button"
             onClick={openYouTubeModal}
-            className="p-2 rounded hover:bg-border"
+            className="p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm text-muted-foreground hover:text-foreground"
             title="YouTube Video Ekle"
           >
-            📹
+            <span className="text-sm">📹</span>
           </button>
         </div>
 
         {/* Table */}
-        <div className="flex gap-1 border-r border-border pr-2 mr-2">
+        <div className="flex gap-1 border-r border-border/30 pr-3 mr-3">
           <button
             type="button"
             onClick={insertTable}
-            className="p-2 rounded hover:bg-border"
+            className="p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm text-muted-foreground hover:text-foreground"
             title="Tablo Ekle"
           >
-            📊
+            <span className="text-sm">📊</span>
           </button>
         </div>
 
@@ -367,29 +391,31 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`p-2 rounded hover:bg-border ${
-              editor.isActive('blockquote') ? 'bg-gray-300' : ''
+            className={`p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm ${
+              editor.isActive('blockquote') 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="Alıntı"
           >
-            &quot;
+            <span className="text-sm font-bold">&quot;</span>
           </button>
           <button
             type="button"
             onClick={() => editor.chain().focus().setHorizontalRule().run()}
-            className="p-2 rounded hover:bg-border"
+            className="p-2.5 rounded-md transition-all duration-200 hover:bg-background hover:shadow-sm text-muted-foreground hover:text-foreground"
             title="Yatay Çizgi"
           >
-            ―
+            <span className="text-sm font-bold">―</span>
           </button>
         </div>
       </div>
 
       {/* Editor Content */}
-      <div className="min-h-[300px]">
+      <div className="min-h-[320px] bg-background">
         <EditorContent
           editor={editor}
-          className="prose max-w-none"
+          className="prose prose-sm max-w-none focus:outline-none"
           placeholder={placeholder}
         />
       </div>

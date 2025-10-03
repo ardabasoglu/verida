@@ -148,7 +148,7 @@ export default function FileUpload({
   };
 
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-4 ${className}`}>
       <input
         ref={fileInputRef}
         type="file"
@@ -157,55 +157,80 @@ export default function FileUpload({
         className="hidden"
       />
 
-      <LoadingButton
-        type="button"
-        onClick={handleFileSelect}
-        isLoading={isUploading}
-        loadingText="Yükleniyor..."
-        className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
-      >
-        📎 Dosya Ekle
-      </LoadingButton>
+      <div className="text-center">
+        <LoadingButton
+          type="button"
+          onClick={handleFileSelect}
+          isLoading={isUploading}
+          loadingText="Yükleniyor..."
+          className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50 font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+        >
+          <span className="text-lg">📎</span>
+          Dosya Seç
+        </LoadingButton>
+      </div>
 
       {isUploading && (
-        <div className="space-y-1">
-          <div className="w-full bg-border rounded-full h-2">
+        <div className="space-y-3 bg-muted/30 rounded-lg p-4 border border-border/50">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium text-foreground">Dosya yükleniyor...</span>
+            <span className="text-muted-foreground">{uploadProgress}%</span>
+          </div>
+          <div className="w-full bg-border/50 rounded-full h-2.5 overflow-hidden">
             <div
-              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-300 ease-out"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
-          <p className="text-xs text-muted-foreground text-center">
-            {uploadProgress}% tamamlandı
-          </p>
         </div>
       )}
 
       {validationError && (
-        <ErrorDisplay
-          message={validationError}
-          type="warning"
-          title="Dosya Doğrulama Hatası"
-          action={{ label: 'Tamam', onClick: () => setValidationError(null) }}
-        />
+        <div className="rounded-lg border-2 border-orange-200 bg-orange-50 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0 mt-2"></div>
+            <div>
+              <p className="text-sm font-semibold text-orange-800 mb-1">Dosya Doğrulama Hatası</p>
+              <p className="text-sm text-orange-700">{validationError}</p>
+              <button
+                onClick={() => setValidationError(null)}
+                className="mt-2 text-xs text-orange-600 hover:text-orange-800 font-medium underline"
+              >
+                Tamam
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {error && (
-        <ErrorDisplay
-          message={error}
-          type="error"
-          title="Dosya Yükleme Hatası"
-          action={{
-            label: 'Tekrar Dene',
-            onClick: () => fileInputRef.current?.click(),
-          }}
-        />
+        <div className="rounded-lg border-2 border-red-200 bg-red-50 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-2"></div>
+            <div>
+              <p className="text-sm font-semibold text-red-800 mb-1">Dosya Yükleme Hatası</p>
+              <p className="text-sm text-red-700">{error}</p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-2 text-xs text-red-600 hover:text-red-800 font-medium underline"
+              >
+                Tekrar Dene
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
-      <div className="text-xs text-muted-foreground">
-        Desteklenen formatlar: PDF, Word, Excel, JPEG, PNG, GIF, WebP
-        <br />
-        Maksimum dosya boyutu: {maxSizeInMB}MB
+      <div className="bg-muted/20 rounded-lg p-4 border border-border/30">
+        <div className="text-center space-y-2">
+          <p className="text-sm font-medium text-foreground">Desteklenen Formatlar</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            PDF, Word, Excel, JPEG, PNG, GIF, WebP
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Maksimum dosya boyutu: <span className="font-semibold">{maxSizeInMB}MB</span>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -232,21 +257,28 @@ export function FileList({
   if (files.length === 0) return null;
 
   return (
-    <div className={`space-y-2 ${className}`}>
-      <h4 className="text-sm font-medium text-foreground">Ekli Dosyalar:</h4>
-      <div className="space-y-2">
+    <div className={`space-y-4 ${className}`}>
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+          Ekli Dosyalar ({files.length})
+        </h4>
+      </div>
+      <div className="space-y-3">
         {files.map((file) => (
           <div
             key={file.id}
-            className="flex items-center justify-between p-2 bg-muted border border-border rounded-md"
+            className="group flex items-center justify-between p-4 bg-background border-2 border-border/50 rounded-lg hover:border-primary/30 hover:shadow-sm transition-all duration-200"
           >
-            <div className="flex items-center space-x-2">
-              <span className="text-lg">{getFileIcon(file.mimeType)}</span>
-              <div>
-                <p className="text-sm font-medium text-foreground">
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-muted/50 rounded-lg flex items-center justify-center">
+                <span className="text-lg">{getFileIcon(file.mimeType)}</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground truncate">
                   {file.originalName}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   {getFileTypeLabel(file.mimeType)}
                 </p>
               </div>
@@ -254,10 +286,10 @@ export function FileList({
             <button
               type="button"
               onClick={() => onRemoveFile(file.id)}
-              className="text-red-600 hover:text-red-800 p-1"
+              className="flex-shrink-0 w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
               title="Dosyayı kaldır"
             >
-              ×
+              <span className="text-sm font-bold">×</span>
             </button>
           </div>
         ))}
