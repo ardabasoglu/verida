@@ -104,5 +104,9 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.5",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": "22.x",
+    "npm": ">=10.0.0"
   }
 }
