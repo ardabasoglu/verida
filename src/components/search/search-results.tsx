@@ -71,9 +71,25 @@ export default function SearchResults({
     });
   };
 
+  const stripHtmlTags = (html: string) => {
+    // Simple but effective regex to remove HTML tags
+    return html
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+      .replace(/&amp;/g, '&') // Replace &amp; with &
+      .replace(/&lt;/g, '<') // Replace &lt; with <
+      .replace(/&gt;/g, '>') // Replace &gt; with >
+      .replace(/&quot;/g, '"') // Replace &quot; with "
+      .replace(/&#39;/g, "'") // Replace &#39; with '
+      .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
+      .trim(); // Remove leading/trailing whitespace
+  };
+
   const truncateContent = (content: string, maxLength: number = 200) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
+    // First strip HTML tags, then truncate
+    const plainText = stripHtmlTags(content);
+    if (plainText.length <= maxLength) return plainText;
+    return plainText.substring(0, maxLength) + '...';
   };
 
   const highlightSearchTerm = (text: string, searchTerm?: string) => {
