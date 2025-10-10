@@ -1,5 +1,6 @@
 import { defineConfig } from 'prisma/config'
 
 export default defineConfig({
-  seed: 'tsx prisma/seed.ts'
+  // Prisma configuration options go here
+  // Note: seed configuration belongs in package.json under "prisma.seed"
 })
