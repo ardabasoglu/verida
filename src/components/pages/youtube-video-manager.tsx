@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { YouTubeEmbedModal, YouTubePreview } from '../editor/youtube-embed';
-import { processYouTubeUrl, type YouTubeVideoInfo } from '@/lib/youtube-utils';
+import { type YouTubeVideoInfo } from '@/lib/youtube-utils';
 
 interface YouTubeVideoManagerProps {
   videos: YouTubeVideoInfo[];
@@ -11,11 +11,11 @@ interface YouTubeVideoManagerProps {
   maxVideos?: number;
 }
 
-export function YouTubeVideoManager({ 
-  videos, 
-  onVideosChange, 
+export function YouTubeVideoManager({
+  videos,
+  onVideosChange,
   className = '',
-  maxVideos = 10 
+  maxVideos = 10
 }: YouTubeVideoManagerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -49,7 +49,7 @@ export function YouTubeVideoManager({
           <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
           YouTube Videoları ({videos.length}/{maxVideos})
         </h4>
-        {canAddMore && (
+        {canAddMore && videos.length > 0 && (
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
@@ -114,10 +114,10 @@ interface YouTubeVideoDisplayProps {
   responsive?: boolean;
 }
 
-export function YouTubeVideoDisplay({ 
-  videoInfo, 
+export function YouTubeVideoDisplay({
+  videoInfo,
   className = '',
-  responsive = true 
+  responsive = true
 }: YouTubeVideoDisplayProps) {
   const embedUrl = videoInfo.embedUrl;
 
@@ -159,11 +159,11 @@ interface YouTubeVideoListProps {
   showTitles?: boolean;
 }
 
-export function YouTubeVideoList({ 
-  videos, 
+export function YouTubeVideoList({
+  videos,
   className = '',
   responsive = true,
-  showTitles = false 
+  showTitles = false
 }: YouTubeVideoListProps) {
   if (videos.length === 0) {
     return null;

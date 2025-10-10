@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { PageWithRelations } from '@/types';
@@ -14,7 +14,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { PageSpecificBreadcrumb } from '@/components/pages/page-breadcrumb';
+import { PageHeader } from '@/components/layout/page-header';
 import FileAttachments from '@/components/files/file-attachments';
 import CommentSection from '@/components/comments/comment-section';
 import DOMPurify from 'dompurify';
@@ -40,58 +40,31 @@ export default function PageViewer({
   const { data: session } = useSession();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Sanitize HTML content
   const sanitizedContent = useMemo(() => {
-    if (!page.content) return '';
+    if (!page.content || !isClient) return page.content || '';
 
     return DOMPurify.sanitize(page.content, {
       ALLOWED_TAGS: [
-        'p',
-        'br',
-        'strong',
-        'em',
-        'u',
-        's',
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'ul',
-        'ol',
-        'li',
-        'blockquote',
-        'a',
-        'img',
-        'table',
-        'thead',
-        'tbody',
-        'tr',
-        'th',
-        'td',
-        'div',
-        'span',
-        'iframe',
-        'hr',
+        'p', 'br', 'strong', 'em', 'u', 's',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'ul', 'ol', 'li', 'blockquote', 'a', 'img',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'div', 'span', 'iframe', 'hr',
       ],
       ALLOWED_ATTR: [
-        'href',
-        'src',
-        'alt',
-        'title',
-        'class',
-        'width',
-        'height',
-        'frameborder',
-        'allowfullscreen',
-        'allow',
+        'href', 'src', 'alt', 'title', 'class',
+        'width', 'height', 'frameborder', 'allowfullscreen', 'allow',
       ],
-      ALLOWED_URI_REGEXP:
-        /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
-  }, [page.content]);
+  }, [page.content, isClient]);
 
   const canEdit =
     session?.user &&
@@ -146,82 +119,20 @@ export default function PageViewer({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Breadcrumbs */}
+    <>
+      {/* Page Header - Similar to create page */}
       {showBreadcrumbs && (
-        <div className="mb-6">
-          <PageSpecificBreadcrumb
-            pageTitle={page.title}
-            pageType={page.pageType}
-            pageId={page.id}
-          />
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="bg-card rounded-lg shadow-md p-6 mb-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-3">
-              <h1 className="text-3xl font-bold text-foreground">
-                {page.title}
-              </h1>
-              <Badge
-                label={PAGE_TYPE_LABELS[page.pageType]}
-                color={
-                  page.pageType === 'INFO'
-                    ? 'blue'
-                    : page.pageType === 'PROCEDURE'
-                      ? 'green'
-                      : page.pageType === 'ANNOUNCEMENT'
-                        ? 'yellow'
-                        : page.pageType === 'WARNING'
-                          ? 'red'
-                          : 'gray'
-                }
-              />
-            </div>
-
-            {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Yazar:</span>
-                <span>{page.author.name || page.author.email}</span>
-              </div>
-              <span>•</span>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Oluşturulma:</span>
-                <span>{formatDate(page.createdAt)}</span>
-              </div>
-              {page.updatedAt !== page.createdAt && (
-                <>
-                  <span>•</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Güncelleme:</span>
-                    <span>{formatDate(page.updatedAt)}</span>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Tags */}
-            {page.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {page.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-muted text-foreground text-sm rounded-md"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Actions */}
+        <PageHeader
+          title={page.title}
+          description={`${PAGE_TYPE_LABELS[page.pageType]} • ${page.author.name || page.author.email} • ${formatDate(page.createdAt)}`}
+          breadcrumbs={[
+            { label: 'Sayfalar', href: '/pages' },
+            { label: page.title },
+          ]}
+        >
+          {/* Actions in header */}
           {canEdit && (
-            <div className="flex gap-2 ml-4">
+            <div className="flex gap-2">
               <Link href={`/pages/${page.id}/edit`}>
                 <Button className="bg-blue-600 text-white hover:bg-blue-700">
                   Düzenle
@@ -237,45 +148,85 @@ export default function PageViewer({
               )}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="bg-card rounded-lg shadow-md p-6 mb-6">
-        <div className="prose max-w-none">
-          {sanitizedContent ? (
-            <div
-              className="text-foreground leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-            />
-          ) : (
-            <p className="text-muted-foreground italic">
-              Bu sayfada henüz içerik bulunmuyor.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Files */}
-      {page.files && page.files.length > 0 && (
-        <div className="bg-card rounded-lg shadow-md p-6 mb-6">
-          <FileAttachments
-            files={page.files.map((file) => ({
-              ...file,
-              fileSize: Number(file.fileSize),
-              createdAt: file.createdAt.toISOString(),
-            }))}
-          />
-        </div>
+        </PageHeader>
       )}
 
-      {/* Comments Section */}
-      <div className="bg-card rounded-lg shadow-md p-6">
-        <CommentSection
-          pageId={page.id}
-          pageAuthorId={page.authorId}
-          initialCommentCount={page.comments?.length || 0}
-        />
+      <div className="space-y-6">
+        {/* Page Type Badge and Meta Info */}
+        <div className="bg-card rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Badge
+              label={PAGE_TYPE_LABELS[page.pageType]}
+              color={
+                page.pageType === 'INFO'
+                  ? 'blue'
+                  : page.pageType === 'PROCEDURE'
+                    ? 'green'
+                    : page.pageType === 'ANNOUNCEMENT'
+                      ? 'yellow'
+                      : page.pageType === 'WARNING'
+                        ? 'red'
+                        : 'gray'
+              }
+            />
+            {page.updatedAt !== page.createdAt && (
+              <span className="text-sm text-muted-foreground">
+                Güncelleme: {formatDate(page.updatedAt)}
+              </span>
+            )}
+          </div>
+
+          {/* Tags */}
+          {page.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {page.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-muted text-foreground text-sm rounded-md"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="bg-card rounded-lg shadow-md p-6">
+          <div className="prose">
+            {sanitizedContent ? (
+              <div
+                dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+              />
+            ) : (
+              <p className="text-muted-foreground italic">
+                Bu sayfada henüz içerik bulunmuyor.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Files */}
+        {page.files && page.files.length > 0 && (
+          <div className="bg-card rounded-lg shadow-md p-6">
+            <FileAttachments
+              files={page.files.map((file) => ({
+                ...file,
+                fileSize: Number(file.fileSize),
+                createdAt: file.createdAt.toISOString(),
+              }))}
+            />
+          </div>
+        )}
+
+        {/* Comments Section */}
+        <div className="bg-card rounded-lg shadow-md p-6">
+          <CommentSection
+            pageId={page.id}
+            pageAuthorId={page.authorId}
+            initialCommentCount={page.comments?.length || 0}
+          />
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -314,6 +265,6 @@ export default function PageViewer({
           </Button>
         </Link>
       </div>
-    </div>
+    </>
   );
 }
