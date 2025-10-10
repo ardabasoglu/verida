@@ -181,232 +181,220 @@ export default function PageForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-        <Card variant="elevated" className="shadow-xl border-0">
-          <CardHeader className="pb-8">
-            <CardTitle className="text-2xl font-bold text-foreground">
-              {isEditing ? 'Sayfayı Düzenle' : 'Yeni Sayfa Oluştur'}
-            </CardTitle>
-            <CardDescription className="text-base text-muted-foreground mt-2">
-              {isEditing 
-                ? 'Mevcut sayfanızı güncelleyin ve değişikliklerinizi kaydedin'
-                : 'Kurumsal bilgi sisteminize yeni bir sayfa ekleyin'
-              }
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 pb-8">
-            <form onSubmit={handleSubmit} className="space-y-16">
-              {/* Basic Information Section */}
-              <FormSection
-                title="Temel Bilgiler"
-                description="Sayfanızın başlığını ve tipini belirleyin"
-              >
-                <FormFieldGroup>
-                  {/* Title */}
-                  <FormField>
-                    <Label htmlFor="title">
-                      Başlık *
-                    </Label>
-                    <Input
-                      type="text"
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, title: e.target.value }))
-                      }
-                      className={errors.title ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}
-                      placeholder="Sayfa başlığını giriniz"
-                    />
-                    {errors.title && (
-                      <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
-                        <span className="inline-block w-1.5 h-1.5 bg-red-600 rounded-full flex-shrink-0"></span>
-                        {errors.title}
-                      </p>
-                    )}
-                  </FormField>
-
-                  {/* Page Type */}
-                  <FormField>
-                    <Label htmlFor="pageType">
-                      Sayfa Tipi *
-                    </Label>
-                    <Select
-                      value={formData.pageType}
-                      onValueChange={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          pageType: value as ContentType,
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sayfa tipi seçin" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PAGE_TYPE_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className="flex flex-col items-start">
-                              <span className="font-semibold">{option.label}</span>
-                              <span className="text-sm text-muted-foreground">{option.description}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormField>
-                </FormFieldGroup>
-              </FormSection>
-
-              {/* Content Section */}
-              <FormSection
-                title="İçerik"
-                description="Sayfanızın ana içeriğini oluşturun"
-                variant="highlighted"
-              >
+    <div className="w-full">
+      <Card variant="elevated" className="shadow-xl border-0">
+        <CardContent className="px-8 py-8">
+          <form onSubmit={handleSubmit} className="space-y-16">
+            {/* Basic Information Section */}
+            <FormSection
+              title="Temel Bilgiler"
+              description="Sayfanızın başlığını ve tipini belirleyin"
+            >
+              <FormFieldGroup>
+                {/* Title */}
                 <FormField>
-                  <Label htmlFor="content">
-                    İçerik *
+                  <Label htmlFor="title">
+                    Başlık *
                   </Label>
-                  <div className={`rounded-lg border-2 transition-all duration-200 ${
-                    errors.content 
-                      ? 'border-red-500 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-500/20' 
-                      : 'border-input focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20'
-                  }`}>
-                    <RichTextEditor
-                      content={formData.content}
-                      onChange={(content) =>
-                        setFormData((prev) => ({ ...prev, content }))
-                      }
-                      placeholder="Sayfa içeriğinizi yazın..."
-                      className="border-0 focus:ring-0"
-                    />
-                  </div>
-                  {errors.content && (
+                  <Input
+                    type="text"
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, title: e.target.value }))
+                    }
+                    className={errors.title ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}
+                    placeholder="Sayfa başlığını giriniz"
+                  />
+                  {errors.title && (
                     <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
                       <span className="inline-block w-1.5 h-1.5 bg-red-600 rounded-full flex-shrink-0"></span>
-                      {errors.content}
+                      {errors.title}
                     </p>
                   )}
                 </FormField>
-              </FormSection>
 
-              {/* Media Section */}
-              <FormSection
-                title="Medya ve Ekler"
-                description="Sayfanıza dosyalar ve videolar ekleyin"
-              >
-                <FormFieldGroup columns={2}>
-                  {/* File Upload */}
-                  <FormField>
-                    <Label>
-                      Dosya Ekleri
-                    </Label>
-                    <div className="rounded-lg border-2 border-dashed border-border p-8 transition-all duration-200 hover:border-primary/50 hover:bg-primary/5">
-                      <FileUpload
-                        onFileUploaded={handleFileUploaded}
-                        className="mb-4"
-                      />
-                    </div>
-                    <FileList files={attachedFiles} onRemoveFile={handleRemoveFile} />
-                  </FormField>
+                {/* Page Type */}
+                <FormField>
+                  <Label htmlFor="pageType">
+                    Sayfa Tipi *
+                  </Label>
+                  <Select
+                    value={formData.pageType}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pageType: value as ContentType,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sayfa tipi seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAGE_TYPE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex flex-col items-start">
+                            <span className="font-semibold">{option.label}</span>
+                            <span className="text-sm text-muted-foreground">{option.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+              </FormFieldGroup>
+            </FormSection>
 
-                  {/* YouTube Videos */}
-                  <FormField>
-                    <Label>
-                      YouTube Videoları
-                    </Label>
-                    <div className="rounded-lg border-2 border-border p-8 bg-muted/30">
-                      <YouTubeVideoManager
-                        videos={formData.youtubeVideos || []}
-                        onVideosChange={handleYouTubeVideosChange}
-                        maxVideos={5}
-                      />
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Sayfanıza YouTube videoları ekleyebilirsiniz. Videolar sayfa
-                      içeriğinde görüntülenecektir.
-                    </p>
-                  </FormField>
-                </FormFieldGroup>
-              </FormSection>
+            {/* Content Section */}
+            <FormSection
+              title="İçerik"
+              description="Sayfanızın ana içeriğini oluşturun"
+              variant="highlighted"
+            >
+              <FormField>
+                <Label htmlFor="content">
+                  İçerik *
+                </Label>
+                <div className={`rounded-lg border-2 transition-all duration-200 ${errors.content
+                    ? 'border-red-500 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-500/20'
+                    : 'border-input focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20'
+                  }`}>
+                  <RichTextEditor
+                    content={formData.content}
+                    onChange={(content) =>
+                      setFormData((prev) => ({ ...prev, content }))
+                    }
+                    placeholder="Sayfa içeriğinizi yazın..."
+                    className="border-0 focus:ring-0"
+                  />
+                </div>
+                {errors.content && (
+                  <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                    <span className="inline-block w-1.5 h-1.5 bg-red-600 rounded-full flex-shrink-0"></span>
+                    {errors.content}
+                  </p>
+                )}
+              </FormField>
+            </FormSection>
 
-              {/* Metadata Section */}
-              <FormSection
-                title="Etiketler ve Metadata"
-                description="Sayfanızı kategorize etmek için etiketler ekleyin"
-                variant="subtle"
-              >
+            {/* Media Section */}
+            <FormSection
+              title="Medya ve Ekler"
+              description="Sayfanıza dosyalar ve videolar ekleyin"
+            >
+              <FormFieldGroup columns={2}>
+                {/* File Upload */}
                 <FormField>
                   <Label>
-                    Etiketler
+                    Dosya Ekleri
                   </Label>
-                  <div className="rounded-lg border-2 border-border p-6 bg-background">
-                    <TagInput
-                      tags={formData.tags}
-                      onChange={(tags) => setFormData((prev) => ({ ...prev, tags }))}
-                      placeholder="Etiket ekle..."
-                      maxTags={10}
+                  <div className="rounded-lg border-2 border-dashed border-border p-8 transition-all duration-200 hover:border-primary/50 hover:bg-primary/5">
+                    <FileUpload
+                      onFileUploaded={handleFileUploaded}
+                      className="mb-4"
+                    />
+                  </div>
+                  <FileList files={attachedFiles} onRemoveFile={handleRemoveFile} />
+                </FormField>
+
+                {/* YouTube Videos */}
+                <FormField>
+                  <Label>
+                    YouTube Videoları
+                  </Label>
+                  <div className="rounded-lg border-2 border-border p-8 bg-muted/30">
+                    <YouTubeVideoManager
+                      videos={formData.youtubeVideos || []}
+                      onVideosChange={handleYouTubeVideosChange}
+                      maxVideos={5}
                     />
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Maksimum 10 etiket ekleyebilirsiniz. Etiketler sayfanızın bulunabilirliğini artırır.
+                    Sayfanıza YouTube videoları ekleyebilirsiniz. Videolar sayfa
+                    içeriğinde görüntülenecektir.
                   </p>
                 </FormField>
-              </FormSection>
+              </FormFieldGroup>
+            </FormSection>
 
-              {/* Submit Error */}
-              {errors.submit && (
-                <div className="rounded-xl border-2 border-red-200 bg-red-50 p-6 shadow-sm">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-2"></div>
-                    <div>
-                      <p className="text-sm font-semibold text-red-800 mb-1">Hata Oluştu</p>
-                      <p className="text-sm text-red-700">{errors.submit}</p>
-                    </div>
-                  </div>
+            {/* Metadata Section */}
+            <FormSection
+              title="Etiketler ve Metadata"
+              description="Sayfanızı kategorize etmek için etiketler ekleyin"
+              variant="subtle"
+            >
+              <FormField>
+                <Label>
+                  Etiketler
+                </Label>
+                <div className="rounded-lg border-2 border-border p-6 bg-background">
+                  <TagInput
+                    tags={formData.tags}
+                    onChange={(tags) => setFormData((prev) => ({ ...prev, tags }))}
+                    placeholder="Etiket ekle..."
+                    maxTags={10}
+                  />
                 </div>
-              )}
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Maksimum 10 etiket ekleyebilirsiniz. Etiketler sayfanızın bulunabilirliğini artırır.
+                </p>
+              </FormField>
+            </FormSection>
 
-              {/* Actions Separator */}
-              <div className="relative py-12">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border/60"></div>
-                </div>
-                <div className="relative flex justify-center">
-                  <div className="bg-background px-8 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-primary/40 rounded-full"></div>
-                      <div className="w-8 h-0.5 bg-gradient-to-r from-primary/60 via-primary to-primary/60 rounded-full"></div>
-                      <div className="w-2 h-2 bg-primary/40 rounded-full"></div>
-                    </div>
+            {/* Submit Error */}
+            {errors.submit && (
+              <div className="rounded-xl border-2 border-red-200 bg-red-50 p-6 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-2"></div>
+                  <div>
+                    <p className="text-sm font-semibold text-red-800 mb-1">Hata Oluştu</p>
+                    <p className="text-sm text-red-700">{errors.submit}</p>
                   </div>
                 </div>
               </div>
+            )}
 
-              {/* Form Actions */}
-              <div className="bg-gradient-to-r from-muted/30 via-muted/20 to-muted/30 rounded-2xl p-8 border border-border/50">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-                  {/* Action Description */}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      {isEditing ? 'Değişiklikleri Kaydet' : 'Sayfayı Yayınla'}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {isEditing 
-                        ? 'Yaptığınız değişiklikleri kaydetmek için "Güncelle" butonuna tıklayın.'
-                        : 'Sayfanız oluşturulduktan sonra tüm kullanıcılar tarafından görülebilir olacaktır.'
-                      }
-                    </p>
+            {/* Actions Separator */}
+            <div className="relative py-12">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border/60"></div>
+              </div>
+              <div className="relative flex justify-center">
+                <div className="bg-background px-8 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary/40 rounded-full"></div>
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-primary/60 via-primary to-primary/60 rounded-full"></div>
+                    <div className="w-2 h-2 bg-primary/40 rounded-full"></div>
                   </div>
+                </div>
+              </div>
+            </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                    <Button
-                      type="button"
-                      onClick={() => router.back()}
-                      variant="outline"
-                      size="lg"
-                      className="
+            {/* Form Actions */}
+            <div className="bg-gradient-to-r from-muted/30 via-muted/20 to-muted/30 rounded-2xl p-8 border border-border/50">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                {/* Action Description */}
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {isEditing ? 'Değişiklikleri Kaydet' : 'Sayfayı Yayınla'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {isEditing
+                      ? 'Yaptığınız değişiklikleri kaydetmek için "Güncelle" butonuna tıklayın.'
+                      : 'Sayfanız oluşturulduktan sonra tüm kullanıcılar tarafından görülebilir olacaktır.'
+                    }
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                  <Button
+                    type="button"
+                    onClick={() => router.back()}
+                    variant="outline"
+                    size="lg"
+                    className="
                         h-14 px-8 text-base font-semibold 
                         border-2 border-border/80 
                         bg-background/80 backdrop-blur-sm
@@ -418,21 +406,21 @@ export default function PageForm({
                         disabled:hover:scale-100 disabled:hover:shadow-none
                         group
                       "
-                      disabled={isSubmitting}
-                    >
-                      <span className="group-hover:translate-x-[-2px] transition-transform duration-200">
-                        İptal
-                      </span>
-                    </Button>
-                    
-                    <Button 
-                      type="submit" 
-                      disabled={isSubmitting} 
-                      variant="default"
-                      size="lg"
-                      loading={isSubmitting}
-                      loadingText={isEditing ? 'Güncelleniyor...' : 'Oluşturuluyor...'}
-                      className="
+                    disabled={isSubmitting}
+                  >
+                    <span className="group-hover:translate-x-[-2px] transition-transform duration-200">
+                      İptal
+                    </span>
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    variant="default"
+                    size="lg"
+                    loading={isSubmitting}
+                    loadingText={isEditing ? 'Güncelleniyor...' : 'Oluşturuluyor...'}
+                    className="
                         h-14 px-10 text-base font-bold 
                         bg-gradient-to-r from-primary via-primary to-primary/90
                         hover:from-primary/90 hover:via-primary hover:to-primary
@@ -445,36 +433,36 @@ export default function PageForm({
                         relative overflow-hidden
                         group
                       "
-                    >
-                      <span className="relative z-10 group-hover:translate-x-1 transition-transform duration-200">
-                        {isSubmitting
-                          ? (isEditing ? 'Güncelleniyor...' : 'Oluşturuluyor...')
-                          : isEditing
-                            ? 'Sayfayı Güncelle'
-                            : 'Sayfayı Oluştur'}
-                      </span>
-                      {/* Subtle shine effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Additional Action Info */}
-                <div className="mt-6 pt-6 border-t border-border/30">
-                  <div className="flex items-start gap-3 text-xs text-muted-foreground">
-                    <div className="w-1.5 h-1.5 bg-primary/60 rounded-full flex-shrink-0 mt-1.5"></div>
-                    <p className="leading-relaxed">
-                      {isEditing 
-                        ? 'Güncelleme işlemi tamamlandıktan sonra sayfa otomatik olarak yeniden yüklenecektir.'
-                        : 'Sayfa oluşturulduktan sonra düzenleme yapmak için sayfa detay sayfasındaki "Düzenle" butonunu kullanabilirsiniz.'
-                      }
-                    </p>
-                  </div>
+                  >
+                    <span className="relative z-10 group-hover:translate-x-1 transition-transform duration-200">
+                      {isSubmitting
+                        ? (isEditing ? 'Güncelleniyor...' : 'Oluşturuluyor...')
+                        : isEditing
+                          ? 'Sayfayı Güncelle'
+                          : 'Sayfayı Oluştur'}
+                    </span>
+                    {/* Subtle shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+                  </Button>
                 </div>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+
+              {/* Additional Action Info */}
+              <div className="mt-6 pt-6 border-t border-border/30">
+                <div className="flex items-start gap-3 text-xs text-muted-foreground">
+                  <div className="w-1.5 h-1.5 bg-primary/60 rounded-full flex-shrink-0 mt-1.5"></div>
+                  <p className="leading-relaxed">
+                    {isEditing
+                      ? 'Güncelleme işlemi tamamlandıktan sonra sayfa otomatik olarak yeniden yüklenecektir.'
+                      : 'Sayfa oluşturulduktan sonra düzenleme yapmak için sayfa detay sayfasındaki "Düzenle" butonunu kullanabilirsiniz.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

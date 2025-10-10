@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import PageForm from '@/components/forms/page-form';
+import { PageHeader } from '@/components/layout/page-header';
 
 export const metadata: Metadata = {
   title: 'Yeni Sayfa Oluştur - Verida',
@@ -27,5 +28,17 @@ export default async function CreatePagePage() {
     redirect('/unauthorized');
   }
 
-  return <PageForm />;
+  return (
+    <>
+      <PageHeader
+        title="Yeni Sayfa Oluştur"
+        description="Yeni bir kurumsal bilgi sayfası oluşturun"
+        breadcrumbs={[
+          { label: 'Sayfalar', href: '/pages' },
+          { label: 'Yeni Sayfa Oluştur' },
+        ]}
+      />
+      <PageForm />
+    </>
+  );
 }
