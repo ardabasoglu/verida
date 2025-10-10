@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Coolify Startup Script
-# This script runs before starting the Next.js application
+# Database setup happens during build, this just starts the app
 
 set -e
 
@@ -13,15 +13,14 @@ if [ -z "$DATABASE_URL" ]; then
     exit 1
 fi
 
-# Generate Prisma client (in case it's not generated during build)
-echo "🔧 Ensuring Prisma client is generated..."
-npx prisma generate
+# Quick database connection test
+echo "🔍 Testing database connection..."
+npx prisma db execute --stdin <<< "SELECT 1;" || {
+    echo "❌ Database connection failed"
+    exit 1
+}
 
-# Run database migrations
-echo "🔄 Running database migrations..."
-npx prisma migrate deploy
-
-echo "✅ Database setup completed"
+echo "✅ Database connection verified"
 
 # Start the Next.js application
 echo "🌟 Starting Next.js server..."

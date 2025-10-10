@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "npm run db:generate && next build",
-    "build:prod": "NODE_ENV=production npm run db:generate && npm run db:migrate:prod && next build",
+    "build:prod": "NODE_ENV=production npm run db:generate && npm run db:setup:prod && next build",
+    "db:setup:prod": "npx prisma db push && (npx prisma db execute --file prisma/migrations/add_performance_indexes.sql || echo 'Performance indexes skipped - continuing')",
     "start": "./start.sh",
     "start:prod": "NODE_ENV=production next start",
     "start:coolify": "./start.sh",
@@ -22,6 +23,7 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset",
+
     "setup:uploads": "node scripts/setup-uploads.mjs",
     "test:integration": "tsx scripts/integration-test.ts",
     "deploy": "bash scripts/deploy.sh",
@@ -32,9 +34,7 @@
     "docker:build": "docker build -f Dockerfile.production -t verida-app .",
     "docker:run": "docker run -p 3000:3000 --env-file .env.production verida-app"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
+
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
     "@floating-ui/dom": "^1.7.4",
