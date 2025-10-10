@@ -110,11 +110,14 @@ install_dependencies() {
 run_migrations() {
     log "Running database migrations..."
     
-    # Generate Prisma client
-    npx prisma generate
-    
-    # Run migrations
-    npx prisma migrate deploy
+    # Use the production database initialization script
+    if [ -f "scripts/init-production-db.sh" ]; then
+        bash scripts/init-production-db.sh
+    else
+        # Fallback to manual migration
+        npx prisma generate
+        npx prisma migrate deploy
+    fi
     
     success "Database migrations completed"
 }
@@ -149,21 +152,12 @@ run_tests() {
 deploy_coolify() {
     log "Deploying to Coolify..."
     
-    # Check if Coolify CLI is available
-    if command -v coolify &> /dev/null; then
-        coolify deploy --config coolify.yaml
-        success "Deployed to Coolify"
-    else
-        log "Coolify CLI not found. Using Docker Compose..."
-        
-        # Use Docker Compose as fallback
-        if [ -f "docker-compose.yml" ]; then
-            docker-compose -f docker-compose.yml up -d --build
-            success "Deployed using Docker Compose"
-        else
-            warning "No deployment method available. Please deploy manually."
-        fi
-    fi
+    # For Coolify, we just need to ensure the build is ready
+    # Coolify handles the actual deployment process
+    log "Build is ready for Coolify deployment"
+    log "Push your changes to trigger Coolify deployment"
+    
+    success "Ready for Coolify deployment"
 }
 
 # Start application (for manual deployment)
