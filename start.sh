@@ -25,4 +25,4 @@ echo "✅ Database setup completed"
 
 # Start the Next.js application
 echo "🌟 Starting Next.js server..."
-exec npm start
+exec npm run start:prod
