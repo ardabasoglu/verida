@@ -66,7 +66,7 @@ class IntegrationTester {
             SELECT FROM information_schema.tables 
             WHERE table_name = ${table}
           );
-        ` as any[];
+        ` as { exists: boolean }[];
         
         if (!result[0]?.exists) {
           throw new Error(`Table ${table} does not exist`);
@@ -112,7 +112,7 @@ class IntegrationTester {
         throw new Error(`Health check failed with status: ${response.status}`);
       }
       
-      const data = await response.json() as any;
+      const data = await response.json() as { status: string };
       if (data.status !== 'healthy' && data.status !== 'degraded') {
         throw new Error(`Health check returned unhealthy status: ${data.status}`);
       }
@@ -243,7 +243,7 @@ class IntegrationTester {
         AND indexname NOT LIKE '%pkey'
       `;
       
-      const indexes = await prisma.$queryRawUnsafe(indexQuery) as any[];
+      const indexes = await prisma.$queryRawUnsafe(indexQuery) as { indexname: string }[];
       
       // We expect at least some indexes to exist (Prisma creates some automatically)
       if (indexes.length < 5) {

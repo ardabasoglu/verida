@@ -11,18 +11,18 @@ interface TestResult {
   test: string
   success: boolean
   error?: string
-  data?: any
+  data?: unknown
 }
 
 async function testCommentAPI(): Promise<TestResult[]> {
   const results: TestResult[] = []
-  
+
   try {
     console.log('🧪 Starting Comment API Tests...\n')
 
     // Setup: Create test user and page
     console.log('1️⃣ Setting up test data...')
-    
+
     const uniqueEmail = `test-api-${Date.now()}@dgmgumruk.com`
     const testUser = await prisma.user.create({
       data: {
@@ -52,15 +52,15 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Test 1: Verify comment validation schemas work
     console.log('2️⃣ Testing comment validation schemas...')
-    
+
     const { createCommentSchema } = await import('@/lib/validations')
-    
+
     // Valid comment
     const validComment = createCommentSchema.parse({
       pageId: testPage.id,
       comment: 'This is a valid comment'
     })
-    
+
     results.push({
       test: 'Valid comment schema',
       success: true,
@@ -107,7 +107,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Test 2: Test comment creation via Prisma (simulating API)
     console.log('3️⃣ Testing comment creation...')
-    
+
     const newComment = await prisma.comment.create({
       data: {
         pageId: testPage.id,
@@ -134,7 +134,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Test 3: Test comment listing with pagination
     console.log('4️⃣ Testing comment listing...')
-    
+
     // Create a few more comments for pagination testing
     await prisma.comment.createMany({
       data: [
@@ -180,7 +180,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Test 4: Test comment update
     console.log('5️⃣ Testing comment update...')
-    
+
     const updatedComment = await prisma.comment.update({
       where: { id: newComment.id },
       data: {
@@ -210,7 +210,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Test 5: Test comment deletion
     console.log('6️⃣ Testing comment deletion...')
-    
+
     await prisma.comment.delete({
       where: { id: newComment.id }
     })
@@ -231,7 +231,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Test 6: Test comment permissions logic
     console.log('7️⃣ Testing comment permissions...')
-    
+
     // Create another user to test permissions
     const otherUser = await prisma.user.create({
       data: {
@@ -258,7 +258,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
     results.push({
       test: 'Comment permissions logic',
       success: true,
-      data: { 
+      data: {
         canEditOwnComment,
         canEditAsPageAuthor,
         canEditAsAdmin,
@@ -268,15 +268,15 @@ async function testCommentAPI(): Promise<TestResult[]> {
 
     // Cleanup
     console.log('🧹 Cleaning up test data...')
-    
+
     await prisma.comment.deleteMany({
       where: { pageId: testPage.id }
     })
-    
+
     await prisma.page.delete({
       where: { id: testPage.id }
     })
-    
+
     await prisma.user.delete({
       where: { id: testUser.id }
     })
@@ -309,33 +309,33 @@ async function testCommentAPI(): Promise<TestResult[]> {
 // Print results
 function printResults(results: TestResult[]) {
   console.log('📊 Test Results Summary:')
-  console.log('=' .repeat(50))
-  
+  console.log('='.repeat(50))
+
   let passed = 0
   let failed = 0
-  
+
   results.forEach((result, index) => {
     const status = result.success ? '✅ PASS' : '❌ FAIL'
     console.log(`${index + 1}. ${result.test}: ${status}`)
-    
+
     if (result.error) {
       console.log(`   Error: ${result.error}`)
     }
-    
+
     if (result.data) {
       console.log(`   Data: ${JSON.stringify(result.data, null, 2)}`)
     }
-    
+
     if (result.success) {
       passed++
     } else {
       failed++
     }
   })
-  
-  console.log('=' .repeat(50))
+
+  console.log('='.repeat(50))
   console.log(`Total: ${results.length} | Passed: ${passed} | Failed: ${failed}`)
-  
+
   if (failed === 0) {
     console.log('🎉 All tests passed!')
   } else {
