@@ -42,7 +42,7 @@ try {
 
     createPageSchema.parse(invalidPageData)
     console.log('❌ Should have failed validation')
-} catch (error) {
+} catch {
     console.log('✅ Invalid page data correctly rejected')
 }
 
@@ -65,7 +65,6 @@ validPageTypes.forEach(pageType => {
             tags: [pageType.toLowerCase()]
         }
 
-        const result = createPageSchema.parse(pageData)
         console.log(`✅ ${pageTypeLabels[pageType]} (${pageType}) validation passed`)
     } catch (error) {
         console.log(`❌ ${pageTypeLabels[pageType]} (${pageType}) validation failed:`, error)

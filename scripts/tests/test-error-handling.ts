@@ -15,13 +15,6 @@ import { apiClient } from '../../src/lib/api-client';
 import { handleError, AppError, ValidationError } from '../../src/lib/errors';
 import { createPageSchema, loginSchema } from '../../src/lib/validations';
 
-// Test configuration
-const TEST_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-  testEmail: 'test@dgmgumruk.com',
-  invalidEmail: 'test@invalid.com',
-};
-
 // Test results tracking
 interface TestResult {
   name: string;

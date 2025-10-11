@@ -41,7 +41,7 @@ const invalidUserData = {
 try {
   createUserSchema.parse(invalidUserData)
   console.log('❌ Invalid user data should have failed')
-} catch (error) {
+} catch {
   console.log('✅ Invalid user data correctly rejected')
 }
 
@@ -81,7 +81,7 @@ const invalidRoleData = {
 try {
   updateUserRoleSchema.parse(invalidRoleData)
   console.log('❌ Invalid role data should have failed')
-} catch (error) {
+} catch {
   console.log('✅ Invalid role data correctly rejected')
 }
 
@@ -123,7 +123,7 @@ const invalidIdData = {
 try {
   userIdSchema.parse(invalidIdData)
   console.log('❌ Invalid ID data should have failed')
-} catch (error) {
+} catch {
   console.log('✅ Invalid ID data correctly rejected')
 }
 

@@ -172,7 +172,7 @@ async function runCommentTests(): Promise<TestResult[]> {
         success: true,
         data: { note: 'Prisma allows empty strings, validation should be at API level' }
       })
-    } catch (error) {
+    } catch {
       results.push({
         test: 'Comment validation (empty comment)',
         success: true,

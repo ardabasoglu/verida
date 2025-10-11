@@ -78,7 +78,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
         success: false,
         error: 'Empty comment should have failed validation'
       })
-    } catch (error) {
+    } catch {
       results.push({
         test: 'Invalid comment schema (empty)',
         success: true,
@@ -97,7 +97,7 @@ async function testCommentAPI(): Promise<TestResult[]> {
         success: false,
         error: 'Long comment should have failed validation'
       })
-    } catch (error) {
+    } catch {
       results.push({
         test: 'Invalid comment schema (too long)',
         success: true,
