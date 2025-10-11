@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Notification } from '@prisma/client';
 import { ApiResponse } from '@/types';
-import { 
-  BellIcon, 
-  ExclamationTriangleIcon, 
+import {
+  BellIcon,
+  ExclamationTriangleIcon,
   InformationCircleIcon,
   ChatBubbleLeftIcon,
   TrashIcon,
@@ -23,9 +23,9 @@ interface NotificationHistoryProps {
 
 type NotificationFilter = 'all' | 'unread' | 'announcement' | 'warning' | 'comment' | 'update';
 
-export function NotificationHistory({ 
-  limit = 50, 
-  showFilters = true 
+export function NotificationHistory({
+  limit = 50,
+  showFilters = true
 }: NotificationHistoryProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,14 +34,10 @@ export function NotificationHistory({
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    fetchNotifications(1, filter);
-  }, [filter]);
-
-  const fetchNotifications = async (pageNum: number, currentFilter: NotificationFilter) => {
+  const fetchNotifications = useCallback(async (pageNum: number, currentFilter: NotificationFilter) => {
     try {
       setLoading(pageNum === 1);
-      
+
       const params = new URLSearchParams({
         page: pageNum.toString(),
         limit: limit.toString(),
@@ -67,7 +63,7 @@ export function NotificationHistory({
         } else {
           setNotifications(prev => [...prev, ...filteredData]);
         }
-        
+
         setHasMore(data.pagination ? data.pagination.page < data.pagination.totalPages : false);
         setTotalCount(data.pagination?.total || 0);
         setPage(pageNum);
@@ -77,7 +73,11 @@ export function NotificationHistory({
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
+
+  useEffect(() => {
+    fetchNotifications(1, filter);
+  }, [filter, fetchNotifications]);
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -188,11 +188,10 @@ export function NotificationHistory({
             <button
               key={key}
               onClick={() => setFilter(key as NotificationFilter)}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                filter === key
-                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                  : 'bg-muted text-foreground hover:bg-border border border-border'
-              }`}
+              className={`px-3 py-1 text-sm rounded-full transition-colors ${filter === key
+                ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                : 'bg-muted text-foreground hover:bg-border border border-border'
+                }`}
             >
               {label}
             </button>
@@ -234,7 +233,7 @@ export function NotificationHistory({
             Bildirim bulunamadı
           </h3>
           <p className="text-muted-foreground">
-            {filter === 'all' 
+            {filter === 'all'
               ? 'Henüz hiç bildiriminiz yok.'
               : `${filter === 'unread' ? 'Okunmamış' : getNotificationTypeText(filter)} bildiriminiz yok.`
             }
@@ -245,28 +244,25 @@ export function NotificationHistory({
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`border rounded-lg p-4 transition-colors ${
-                notification.read 
-                  ? 'border-border bg-card' 
-                  : 'border-blue-200 bg-blue-50'
-              }`}
+              className={`border rounded-lg p-4 transition-colors ${notification.read
+                ? 'border-border bg-card'
+                : 'border-blue-200 bg-blue-50'
+                }`}
             >
               <div className="flex items-start space-x-3">
                 <div className="flex-shrink-0 mt-1">
                   {getNotificationIcon(notification.type)}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className={`text-sm font-medium ${
-                        notification.read ? 'text-foreground' : 'text-blue-900'
-                      }`}>
+                      <h4 className={`text-sm font-medium ${notification.read ? 'text-foreground' : 'text-blue-900'
+                        }`}>
                         {notification.title}
                       </h4>
-                      <p className={`text-sm mt-1 ${
-                        notification.read ? 'text-muted-foreground' : 'text-blue-800'
-                      }`}>
+                      <p className={`text-sm mt-1 ${notification.read ? 'text-muted-foreground' : 'text-blue-800'
+                        }`}>
                         {notification.message}
                       </p>
                       <div className="flex items-center space-x-4 mt-2">
@@ -281,7 +277,7 @@ export function NotificationHistory({
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-1 ml-4">
                       {notification.read ? (
                         <button
@@ -313,7 +309,7 @@ export function NotificationHistory({
               </div>
             </div>
           ))}
-          
+
           {hasMore && (
             <div className="text-center pt-4">
               <button

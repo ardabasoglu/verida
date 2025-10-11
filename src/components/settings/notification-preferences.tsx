@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Switch } from '@headlessui/react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { NotificationPreference } from '@prisma/client';
+
 
 interface NotificationPreferencesData {
   inAppNotifications: boolean;

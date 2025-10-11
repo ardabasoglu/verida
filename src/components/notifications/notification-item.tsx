@@ -70,7 +70,7 @@ export function NotificationItem({
         addSuffix: true,
         locale: tr,
       });
-    } catch (error) {
+    } catch {
       return 'Bilinmeyen zaman';
     }
   };

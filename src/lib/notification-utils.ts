@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { sendNotificationToUser, broadcastNotification } from '@/lib/notification-stream';
-import { ContentType, UserRole } from '@prisma/client';
+import { sendNotificationToUser } from '@/lib/notification-stream';
 
 export interface NotificationData {
   title: string;
