@@ -435,7 +435,7 @@ export function withInputSanitization(
 
           sanitizedData = sanitized;
         }
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           {
             success: false,

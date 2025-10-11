@@ -131,7 +131,7 @@ export class ApiClient {
               xhr.status
             ));
           }
-        } catch (error) {
+        } catch {
           reject(new AppError('Yanıt işlenemedi', xhr.status));
         }
       });
