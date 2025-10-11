@@ -496,35 +496,58 @@ export class StatsQueries {
    * Get global statistics
    */
   static async getGlobalStats() {
+    // Return default stats during build phase when database is not available
+    if (!process.env.DATABASE_URL || process.env.NEXT_PHASE === 'phase-production-build') {
+      return {
+        totalPages: 0,
+        totalUsers: 0,
+        totalFiles: 0,
+        totalComments: 0,
+        pagesByType: {} as Record<ContentType, number>,
+      };
+    }
+
     return withCache(
       CacheKeys.globalStats(),
       async () => {
-        const [totalPages, totalUsers, totalFiles, totalComments, pagesByType] =
-          await Promise.all([
-            prisma.page.count({ where: { published: true } }),
-            prisma.user.count(),
-            prisma.file.count(),
-            prisma.comment.count(),
-            prisma.page.groupBy({
-              by: ['pageType'],
-              where: { published: true },
-              _count: { pageType: true },
-            }),
-          ]);
+        try {
+          const [totalPages, totalUsers, totalFiles, totalComments, pagesByType] =
+            await Promise.all([
+              prisma.page.count({ where: { published: true } }),
+              prisma.user.count(),
+              prisma.file.count(),
+              prisma.comment.count(),
+              prisma.page.groupBy({
+                by: ['pageType'],
+                where: { published: true },
+                _count: { pageType: true },
+              }),
+            ]);
 
-        return {
-          totalPages,
-          totalUsers,
-          totalFiles,
-          totalComments,
-          pagesByType: pagesByType.reduce(
-            (acc, item) => {
-              acc[item.pageType] = item._count.pageType;
-              return acc;
-            },
-            {} as Record<ContentType, number>
-          ),
-        };
+          return {
+            totalPages,
+            totalUsers,
+            totalFiles,
+            totalComments,
+            pagesByType: pagesByType.reduce(
+              (acc, item) => {
+                acc[item.pageType] = item._count.pageType;
+                return acc;
+              },
+              {} as Record<ContentType, number>
+            ),
+          };
+        } catch (error) {
+          // Return default stats if database query fails
+          console.warn('Failed to fetch global stats, returning defaults:', error);
+          return {
+            totalPages: 0,
+            totalUsers: 0,
+            totalFiles: 0,
+            totalComments: 0,
+            pagesByType: {} as Record<ContentType, number>,
+          };
+        }
       },
       undefined,
       30 * 60 * 1000 // 30 minutes

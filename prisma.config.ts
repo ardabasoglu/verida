@@ -2,5 +2,5 @@ import { defineConfig } from 'prisma/config'
 
 export default defineConfig({
   // Prisma configuration options go here
-  // Note: seed configuration belongs in package.json under "prisma.seed"
+  // Note: seed configuration is handled by package scripts
 })

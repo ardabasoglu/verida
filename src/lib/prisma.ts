@@ -63,6 +63,15 @@ export async function disconnectFromDatabase() {
 
 // Database health check
 export async function checkDatabaseHealth() {
+  // Skip during build phase when DATABASE_URL might not be available
+  if (!process.env.DATABASE_URL) {
+    return {
+      status: 'unhealthy',
+      error: 'DATABASE_URL not configured',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   try {
     await prisma.$queryRaw`SELECT 1`;
     return { status: 'healthy', timestamp: new Date().toISOString() };
