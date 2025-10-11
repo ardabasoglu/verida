@@ -31,21 +31,30 @@
    cd verida
    ```
 
-2. **Configure Environment**
-   ```bash
-   cp .env.production .env.local
-   # Edit .env.local with your production values
+2. **Configure Environment Variables in Coolify**
+   Set these required environment variables in your Coolify dashboard:
+   ```env
+   DATABASE_URL=postgresql://user:pass@postgres:5432/verida_prod
+   NEXTAUTH_URL=https://your-app.coolify.io
+   NEXTAUTH_SECRET=your-64-character-secret
+   EMAIL_FROM=noreply@dgmgumruk.com
    ```
 
-3. **Run Integration Tests**
+3. **Set Build Command in Coolify**
    ```bash
-   npm run test:integration
+   ./build.sh
    ```
 
-4. **Deploy to Coolify**
+4. **Set Start Command in Coolify**
    ```bash
-   npm run deploy
+   ./start.sh
    ```
+
+5. **Deploy to Coolify**
+   The deployment will:
+   - Build the application (without database dependency)
+   - Set up database schema and indexes at startup
+   - Start the Next.js server
 
 ### Manual Deployment Steps
 
