@@ -5,7 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
-import { ContentType, UserRole } from '@prisma/client';
+import { ContentType } from '@prisma/client';
 import {
   withCache,
   CacheKeys,

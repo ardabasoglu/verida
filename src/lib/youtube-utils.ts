@@ -134,7 +134,7 @@ export function normalizeYouTubeUrl(url: string): string | null {
  * Gets YouTube video title (requires API key for full functionality)
  * This is a placeholder for future enhancement with YouTube Data API
  */
-export async function getYouTubeVideoTitle(videoId: string): Promise<string | null> {
+export async function getYouTubeVideoTitle(): Promise<string | null> {
   // For now, return null. In the future, this could use YouTube Data API
   // to fetch video title and other metadata
   return null;

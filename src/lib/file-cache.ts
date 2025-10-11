@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile, stat } from 'fs/promises';
-import { join } from 'path';
+
 
 /**
  * File cache configuration
@@ -119,7 +119,6 @@ export async function createFileResponse(
 
     // Generate cache headers
     const cacheHeaders = generateCacheHeaders(mimeType, fileSize);
-    const etag = cacheHeaders['ETag'];
 
     // Read file
     const fileBuffer = await readFile(filePath);
@@ -153,8 +152,8 @@ export async function createFileResponse(
       status: 200,
       headers,
     });
-  } catch (error) {
-    console.error('Error creating file response:', error);
+  } catch {
+    console.error('Error creating file response');
     return new NextResponse('File not found', { status: 404 });
   }
 }
@@ -215,8 +214,8 @@ export async function serveFileWithCache(
 
     // Serve file with optimized headers
     return createFileResponse(filePath, mimeType, originalName, download);
-  } catch (error) {
-    console.error('Error serving file:', error);
+  } catch {
+    console.error('Error serving file');
     return new NextResponse('File not found', { status: 404 });
   }
 }
@@ -237,7 +236,7 @@ export class FileBatchOperations {
       try {
         const stats = await stat(path);
         return [path, { size: stats.size, mtime: stats.mtime }];
-      } catch (error) {
+      } catch {
         return [path, null];
       }
     });
@@ -261,7 +260,7 @@ export class FileBatchOperations {
       try {
         await stat(path);
         return path;
-      } catch (error) {
+      } catch {
         return null;
       }
     });
