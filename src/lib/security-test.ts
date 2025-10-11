@@ -3,7 +3,7 @@
  * For testing security measures in development and testing environments
  */
 
-import { NextRequest } from 'next/server';
+
 
 /**
  * Test payloads for security validation
@@ -115,7 +115,7 @@ export class SecurityTester {
     maxRequests: number,
     windowMs: number
   ): Promise<void> {
-    const startTime = Date.now();
+
     let successCount = 0;
     let rateLimitedCount = 0;
 
@@ -134,7 +134,7 @@ export class SecurityTester {
         } else if (response.ok) {
           successCount++;
         }
-      } catch (error) {
+      } catch {
         // Network errors don't count
       }
     }
