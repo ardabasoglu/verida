@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ContentType } from '@prisma/client';
-import { PageWithRelations } from '@/types';
 import {
   Select,
   SelectContent,

@@ -21,7 +21,7 @@ export default function TagInput({
   onChange,
   placeholder = 'Etiket ekle...',
   maxTags = 10,
-  suggestions = [],
+
 }: TagInputProps) {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
