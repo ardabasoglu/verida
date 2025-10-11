@@ -13,12 +13,7 @@ import RichTextEditor from '@/components/editor/rich-text-editor';
 
 import { ContentType } from '@prisma/client';
 
-interface AttachedFile {
-  id: string;
-  filename: string;
-  originalName: string;
-  mimeType: string;
-}
+
 
 export default function TestEditorPage() {
   const [formData, setFormData] = useState({
@@ -28,11 +23,10 @@ export default function TestEditorPage() {
     tags: ['test', 'editor'],
   });
 
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+
 
   const handleSave = () => {
     console.log('Form Data:', formData);
-    console.log('Attached Files:', attachedFiles);
     alert('Content saved to console! Check browser dev tools.');
   };
 

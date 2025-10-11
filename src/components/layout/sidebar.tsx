@@ -10,7 +10,7 @@ import {
   PlusIcon,
   ChartBarIcon,
   UserGroupIcon,
-  HomeIcon,
+
 } from '@heroicons/react/24/outline';
 
 interface SidebarProps {

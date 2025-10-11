@@ -9,7 +9,7 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   ChartBarIcon,
-  HomeIcon,
+
   Bars3Icon,
   XMarkIcon,
   Cog6ToothIcon,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { UserRole } from '@prisma/client';
 import { ActivityAction, ResourceType } from '@/lib/activity-logger';
@@ -60,7 +60,7 @@ export default function ActivityLogViewer() {
     session?.user?.role === UserRole.ADMIN ||
     session?.user?.role === UserRole.SYSTEM_ADMIN;
 
-  const fetchLogs = async (newOffset = 0, newFilters = filters) => {
+  const fetchLogs = useCallback(async (newOffset = 0, newFilters = filters) => {
     if (!canViewLogs) return;
 
     setLoading(true);
@@ -101,11 +101,11 @@ export default function ActivityLogViewer() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [canViewLogs, filters]);
 
   useEffect(() => {
     fetchLogs();
-  }, [canViewLogs]);
+  }, [canViewLogs, fetchLogs]);
 
   const handleFilterChange = (newFilters: ActivityLogFilters) => {
     setFilters(newFilters);

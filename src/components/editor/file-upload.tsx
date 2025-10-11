@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { getFileTypeLabel, getFileIcon } from '@/lib/file-utils-client';
 import { LoadingButton } from '@/components/ui/loading';
-import { ErrorDisplay } from '@/components/ui/error-boundary';
+
 import { useApiMutation } from '@/lib/api-client';
 
 interface FileUploadProps {

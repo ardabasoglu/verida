@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { UserRole } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import UserList from './user-list';
@@ -55,7 +55,7 @@ export default function UserManagementDashboard() {
     role: '' as UserRole | '',
   });
 
-  const fetchUsers = async (page = 1, search = '', role = '') => {
+  const fetchUsers = useCallback(async (page = 1, search = '', role = '') => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -81,11 +81,11 @@ export default function UserManagementDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.limit]);
 
   useEffect(() => {
     fetchUsers(pagination.page, filters.search, filters.role);
-  }, [pagination.page, filters.search, filters.role]);
+  }, [pagination.page, filters.search, filters.role, fetchUsers]);
 
   const handleSearch = (search: string) => {
     setFilters((prev) => ({ ...prev, search }));

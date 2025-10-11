@@ -1,14 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export default function DevLoginPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   // Only show this page in development
   if (process.env.NODE_ENV !== 'development') {

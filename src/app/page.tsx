@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatsQueries } from '@/lib/query-optimizer';
 import { FileText, Users, Settings, BarChart3 } from 'lucide-react';
@@ -122,11 +123,12 @@ export default async function Home() {
             <div className="text-center">
               <p className="text-xs text-muted-foreground mb-2">Geliştiren</p>
               <div className="h-6 flex items-center justify-center">
-                <img
+                <Image
                   src="/dgm-logo.png"
                   alt="DGM Gümrük Logo"
+                  width={24}
+                  height={24}
                   className="h-6 w-auto mx-auto opacity-60"
-                  loading="lazy"
                 />
               </div>
             </div>

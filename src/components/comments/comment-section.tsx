@@ -12,8 +12,7 @@ interface CommentSectionProps {
 
 export default function CommentSection({ 
   pageId, 
-  pageAuthorId, 
-  initialCommentCount = 0 
+  pageAuthorId
 }: CommentSectionProps) {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 

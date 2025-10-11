@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {
   YouTubeEmbedModal,
-  YouTubePreview,
 } from '@/components/editor/youtube-embed';
 import {
   YouTubeVideoManager,

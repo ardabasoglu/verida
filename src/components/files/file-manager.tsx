@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import FileUpload, { FileList } from '@/components/editor/file-upload'
+import FileUpload from '@/components/editor/file-upload'
 import { getFileTypeLabel, getFileIcon, formatFileSize } from '@/lib/file-utils-client'
 
 interface FileData {
@@ -48,7 +48,7 @@ export default function FileManager({
   const [totalPages, setTotalPages] = useState(1)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  const fetchFiles = async (pageNum = 1) => {
+  const fetchFiles = useCallback(async (pageNum = 1) => {
     try {
       setLoading(true)
       setError(null)
@@ -82,13 +82,13 @@ export default function FileManager({
     } finally {
       setLoading(false)
     }
-  }
+  }, [pageId, userId])
 
   useEffect(() => {
     fetchFiles()
-  }, [pageId, userId])
+  }, [pageId, userId, fetchFiles])
 
-  const handleFileUploaded = (newFile: { id: string; filename: string; originalName: string; mimeType: string }) => {
+  const handleFileUploaded = () => {
     // Refresh the file list to get the complete file data
     fetchFiles(page)
   }

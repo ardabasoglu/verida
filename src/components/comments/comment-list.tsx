@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CommentWithUser } from '@/types';
 import CommentItem from './comment-item';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export default function CommentList({
   const [total, setTotal] = useState(0);
   const limit = 10;
 
-  const fetchComments = async (page: number = 1) => {
+  const fetchComments = useCallback(async (page: number = 1) => {
     try {
       setIsLoading(true);
       setError('');
@@ -64,12 +64,12 @@ export default function CommentList({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [pageId, limit]);
 
   // Fetch comments on mount and when refreshTrigger changes
   useEffect(() => {
     fetchComments(1);
-  }, [pageId, refreshTrigger]);
+  }, [pageId, refreshTrigger, fetchComments]);
 
   const handlePageChange = (page: number) => {
     fetchComments(page);

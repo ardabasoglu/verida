@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 import { processYouTubeUrl, type YouTubeVideoInfo } from '@/lib/youtube-utils';
 import {
   Dialog,
@@ -122,9 +123,11 @@ export function YouTubeEmbedModal({
                 Video Önizleme
               </h4>
               <div className="flex items-start space-x-3">
-                <img
+                <Image
                   src={videoInfo.thumbnailUrl}
                   alt="Video thumbnail"
+                  width={80}
+                  height={60}
                   className="w-20 h-15 object-cover rounded"
                 />
                 <div className="flex-1 min-w-0">
@@ -181,9 +184,11 @@ export function YouTubePreview({
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-4 flex-1">
           <div className="relative flex-shrink-0">
-            <img
+            <Image
               src={videoInfo.thumbnailUrl}
               alt="Video thumbnail"
+              width={80}
+              height={60}
               className="w-20 h-15 object-cover rounded-lg shadow-sm"
             />
             <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
