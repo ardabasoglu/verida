@@ -111,41 +111,7 @@ export const isDevelopment = env.NODE_ENV === 'development';
 export const isProduction = env.NODE_ENV === 'production';
 export const isTest = env.NODE_ENV === 'test';
 
-// Database configuration helpers
-export const getDatabaseConfig = () => ({
-  url: env.DATABASE_URL,
-  poolSize: parseInt(env.DATABASE_POOL_SIZE),
-  timeout: parseInt(env.DATABASE_TIMEOUT),
-});
 
-// File upload configuration helpers
-export const getFileUploadConfig = () => ({
-  uploadDir: env.UPLOAD_DIR,
-  maxFileSizeMB: parseInt(env.MAX_FILE_SIZE_MB),
-  maxFileSizeBytes: parseInt(env.MAX_FILE_SIZE_MB) * 1024 * 1024,
-});
-
-// Email configuration helpers
-export const getEmailConfig = () => ({
-  host: env.EMAIL_SERVER_HOST,
-  port: parseInt(env.EMAIL_SERVER_PORT),
-  user: env.EMAIL_SERVER_USER,
-  password: env.EMAIL_SERVER_PASSWORD,
-  from: env.EMAIL_FROM,
-});
-
-// Security configuration helpers
-export const getSecurityConfig = () => ({
-  csrfSecret: env.CSRF_SECRET || env.NEXTAUTH_SECRET,
-  nextAuthSecret: env.NEXTAUTH_SECRET,
-  nextAuthUrl: env.NEXTAUTH_URL,
-});
-
-// Logging configuration helpers
-export const getLoggingConfig = () => ({
-  level: env.LOG_LEVEL,
-  file: env.LOG_FILE,
-});
 
 // Monitoring configuration helpers
 export const getMonitoringConfig = () => ({
