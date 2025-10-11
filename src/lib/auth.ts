@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
       
       return true
     },
-    async session({ session, user }) {
+    async session({ session }) {
       // Add user role and id to session
       if (session.user?.email) {
         const dbUser = await prisma.user.findUnique({
@@ -148,7 +148,7 @@ export const authOptions: NextAuthOptions = {
         })
       }
     },
-    async signIn({ user, account, profile, isNewUser }) {
+    async signIn({ user, account, isNewUser }) {
       // Log user login activity
       if (user.id) {
         await ActivityLogger.log({

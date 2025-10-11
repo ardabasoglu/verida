@@ -51,7 +51,7 @@ export function SignInForm() {
                 // Redirect to verify request page
                 router.push('/auth/verify-request')
             }
-        } catch (error) {
+        } catch {
             setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.')
         } finally {
             setIsLoading(false)
@@ -74,7 +74,7 @@ export function SignInForm() {
             } else if (result?.ok) {
                 router.push(callbackUrl)
             }
-        } catch (error) {
+        } catch {
             setError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.')
         } finally {
             setIsLoading(false)
