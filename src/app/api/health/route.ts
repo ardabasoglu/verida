@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { checkDatabaseHealth } from '@/lib/prisma';
 import { handleError } from '@/lib/errors';
 import { getEnvironmentInfo, getMonitoringConfig } from '@/lib/env-validation';
@@ -60,7 +60,7 @@ interface HealthCheck {
   details?: HealthCheckDetails;
 }
 
-export async function GET(_: NextRequest) {
+export async function GET() {
   
   try {
     const monitoringConfig = getMonitoringConfig();
@@ -125,6 +125,15 @@ export async function GET(_: NextRequest) {
 async function checkDatabase(): Promise<HealthCheck> {
   const startTime = Date.now();
   
+  // Skip database check during build phase
+  if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    return {
+      status: 'warn',
+      message: 'Database check skipped - no DATABASE_URL configured',
+      duration: Date.now() - startTime
+    };
+  }
+  
   try {
     const dbHealth = await checkDatabaseHealth();
     const duration = Date.now() - startTime;
@@ -145,9 +154,12 @@ async function checkDatabase(): Promise<HealthCheck> {
       };
     }
   } catch (error) {
+    // During build, treat database connection failures as warnings, not failures
+    const isBuildTime = !process.env.DATABASE_URL || process.env.NEXT_PHASE === 'phase-production-build';
+    
     return {
-      status: 'fail',
-      message: `Database check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      status: isBuildTime ? 'warn' : 'fail',
+      message: `Database check ${isBuildTime ? 'skipped' : 'failed'}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       duration: Date.now() - startTime
     };
   }

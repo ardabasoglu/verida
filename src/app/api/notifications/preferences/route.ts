@@ -9,7 +9,7 @@ const updatePreferencesSchema = z.object({
 });
 
 // GET /api/notifications/preferences - Get user's notification preferences
-export async function GET(_: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

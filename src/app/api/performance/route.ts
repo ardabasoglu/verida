@@ -7,7 +7,7 @@ import { pageCache, searchCache, userCache, statsCache } from '@/lib/cache'
 /**
  * GET /api/performance - Get performance metrics and cache statistics
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     

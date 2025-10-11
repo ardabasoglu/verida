@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 /**
  * GET /api/pages/test - Test page management functionality
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Test database connection and page model
     const pageCount = await prisma.page.count()
