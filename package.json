@@ -12,7 +12,7 @@
     "start": "./start.sh",
     "start:prod": "NODE_ENV=production next start",
     "start:coolify": "./start.sh",
-    "build:coolify": "npm run prebuild && next build",
+    "build:coolify": "npm run prebuild && NEXT_PHASE=phase-production-build next build",
     "postbuild": "echo 'Build completed successfully'",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
