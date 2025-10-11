@@ -111,19 +111,6 @@ curl -f http://localhost:3000/api/health
 
 ## 🐳 Docker Deployment
 
-### Using Docker Compose
-
-```bash
-# Build and start services
-docker-compose up -d --build
-
-# Check logs
-docker-compose logs -f app
-
-# Stop services
-docker-compose down
-```
-
 ### Using Dockerfile
 
 ```bash
@@ -209,17 +196,17 @@ The application automatically sets security headers:
 
 #### Database Connection Failed
 ```bash
-# Check database status
-docker-compose logs postgres
-
 # Test connection manually
 psql -h localhost -U verida_user -d verida_prod
+
+# Check database logs (if using Docker)
+docker logs <postgres-container-name>
 ```
 
 #### Application Won't Start
 ```bash
 # Check application logs
-docker-compose logs app
+npm run health:check
 
 # Verify environment variables
 npm run test:integration
@@ -286,11 +273,11 @@ npm run db:seed
 
 #### Application Recovery
 ```bash
-# Restart services
-docker-compose restart app
+# Restart application (if using PM2)
+pm2 restart verida
 
-# Or rebuild if needed
-docker-compose up -d --build app
+# Or restart Docker container
+docker restart <container-name>
 ```
 
 ## 📊 Performance Monitoring
@@ -326,7 +313,7 @@ npm run db:migrate:prod
 
 # Build and restart
 npm run build:prod
-docker-compose restart app
+# Restart using your deployment method (PM2, Docker, etc.)
 ```
 
 ### Database Maintenance
@@ -346,8 +333,11 @@ VACUUM;
 ### Log Management
 
 ```bash
-# View application logs
-docker-compose logs -f app
+# View application logs (PM2)
+pm2 logs verida
+
+# View application logs (Docker)
+docker logs <container-name>
 
 # Rotate logs (if needed)
 logrotate /app/logs/app.log

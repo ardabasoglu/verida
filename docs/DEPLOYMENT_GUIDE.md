@@ -127,38 +127,21 @@ ENV HOSTNAME "0.0.0.0"
 CMD ["node", "server.js"]
 ```
 
-### Docker Compose
-```yaml
-version: '3.8'
+### Single Docker Container
+```bash
+# Build the Docker image
+docker build -f Dockerfile.production -t verida-app .
 
-services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/verida
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=your-secret-key
-    depends_on:
-      - db
-    volumes:
-      - ./uploads:/app/public/uploads
-      - ./logs:/app/logs
-
-  db:
-    image: postgres:14
-    environment:
-      - POSTGRES_DB=verida
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-volumes:
-  postgres_data:
+# Run with external database
+docker run -d \
+  --name verida-app \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://user:pass@host:5432/verida" \
+  -e NEXTAUTH_URL="https://your-domain.com" \
+  -e NEXTAUTH_SECRET="your-secret-key" \
+  -v ./uploads:/app/public/uploads \
+  -v ./logs:/app/logs \
+  verida-app
 ```
 
 ## Manual Server Deployment

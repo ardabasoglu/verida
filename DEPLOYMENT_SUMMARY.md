@@ -42,8 +42,8 @@
 
 **Deployment Methods Supported:**
 1. **Coolify Platform** (Recommended)
-2. **Docker Compose**
-3. **Manual Server Deployment**
+2. **Manual Server Deployment**
+3. **Docker Container Deployment**
 
 ### ✅ Monitoring and Health Checks
 
