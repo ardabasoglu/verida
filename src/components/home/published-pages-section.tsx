@@ -78,6 +78,9 @@ export default function PublishedPagesSection({
     const fetchPages = useCallback(async () => {
         setLoading(true);
         setError(null);
+        
+        // Add a small delay to prevent flickering on fast responses
+        const minLoadingTime = new Promise(resolve => setTimeout(resolve, 150));
 
         try {
             const searchParams = new URLSearchParams();
@@ -122,6 +125,8 @@ export default function PublishedPagesSection({
             console.error('Error fetching pages:', error);
             setError(error instanceof Error ? error.message : 'Bir hata oluştu');
         } finally {
+            // Wait for minimum loading time to prevent flickering
+            await minLoadingTime;
             setLoading(false);
         }
     }, [filters]);
@@ -186,7 +191,7 @@ export default function PublishedPagesSection({
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full min-h-[600px]">
             {/* Header with Search */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
@@ -377,113 +382,121 @@ export default function PublishedPagesSection({
                 </div>
             )}
 
-            {/* Loading State */}
-            {loading && (
-                <div className="text-center py-8">
-                    <p className="text-muted-foreground">Sayfalar yükleniyor...</p>
-                </div>
-            )}
+            {/* Content Area with Consistent Height */}
+            <div className="relative min-h-[500px]">
+                {/* Loading State */}
+                {loading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10">
+                        <div className="space-y-4 text-center">
+                            <div className="spinner w-8 h-8 mx-auto"></div>
+                            <p className="text-muted-foreground">Sayfalar yükleniyor...</p>
+                        </div>
+                    </div>
+                )}
 
-            {/* Pages Grid */}
-            {!loading && pages.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {pages.map((page) => (
-                        <Card key={page.id} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
-                            <CardContent className="p-6">
-                                <div className="space-y-4">
-                                    {/* Header */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-start justify-between gap-2">
-                                            <Badge
-                                                label={PAGE_TYPE_LABELS[page.pageType]}
-                                                color={PAGE_TYPE_COLORS[page.pageType]}
-                                            />
+                {/* Pages Grid */}
+                {pages.length > 0 && (
+                    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 filter-transition ${loading ? 'loading' : ''}`}>
+                        {pages.map((page) => (
+                            <Card key={page.id} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                                <CardContent className="p-6">
+                                    <div className="space-y-4">
+                                        {/* Header */}
+                                        <div className="space-y-2">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <Badge
+                                                    label={PAGE_TYPE_LABELS[page.pageType]}
+                                                    color={PAGE_TYPE_COLORS[page.pageType]}
+                                                />
+                                            </div>
+                                            <Link
+                                                href={`/pages/${page.id}`}
+                                                className="block text-lg font-semibold text-card-foreground hover:text-primary transition-colors"
+                                                style={{
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    overflow: 'hidden',
+                                                }}
+                                            >
+                                                {page.title}
+                                            </Link>
                                         </div>
-                                        <Link
-                                            href={`/pages/${page.id}`}
-                                            className="block text-lg font-semibold text-card-foreground hover:text-primary transition-colors"
-                                            style={{
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: 'vertical',
-                                                overflow: 'hidden',
-                                            }}
-                                        >
-                                            {page.title}
-                                        </Link>
+
+                                        {/* Content Preview */}
+                                        {page.content && (
+                                            <p
+                                                className="text-muted-foreground text-sm leading-relaxed"
+                                                style={{
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    overflow: 'hidden',
+                                                }}
+                                            >
+                                                {truncateContent(page.content)}
+                                            </p>
+                                        )}
+
+                                        {/* Tags */}
+                                        {page.tags.length > 0 && (
+                                            <div className="flex flex-wrap gap-1">
+                                                {page.tags.slice(0, 3).map((tag, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="px-2 py-1 text-xs rounded-md bg-accent/20 text-accent-foreground ring-1 ring-border"
+                                                    >
+                                                        #{tag}
+                                                    </span>
+                                                ))}
+                                                {page.tags.length > 3 && (
+                                                    <span className="px-2 py-1 text-xs text-muted-foreground">
+                                                        +{page.tags.length - 3}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Meta Info */}
+                                        <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
+                                            <span className="truncate">
+                                                {page.author.name || page.author.email}
+                                            </span>
+                                            <span>{formatDate(page.createdAt)}</span>
+                                        </div>
+
+                                        {/* Stats */}
+                                        {page._count && (
+                                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                                <span>{page._count.comments} yorum</span>
+                                                {page._count.files > 0 && (
+                                                    <span>{page._count.files} dosya</span>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
 
-                                    {/* Content Preview */}
-                                    {page.content && (
-                                        <p
-                                            className="text-muted-foreground text-sm leading-relaxed"
-                                            style={{
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 3,
-                                                WebkitBoxOrient: 'vertical',
-                                                overflow: 'hidden',
-                                            }}
-                                        >
-                                            {truncateContent(page.content)}
-                                        </p>
-                                    )}
-
-                                    {/* Tags */}
-                                    {page.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-1">
-                                            {page.tags.slice(0, 3).map((tag, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="px-2 py-1 text-xs rounded-md bg-accent/20 text-accent-foreground ring-1 ring-border"
-                                                >
-                                                    #{tag}
-                                                </span>
-                                            ))}
-                                            {page.tags.length > 3 && (
-                                                <span className="px-2 py-1 text-xs text-muted-foreground">
-                                                    +{page.tags.length - 3}
-                                                </span>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Meta Info */}
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
-                                        <span className="truncate">
-                                            {page.author.name || page.author.email}
-                                        </span>
-                                        <span>{formatDate(page.createdAt)}</span>
-                                    </div>
-
-                                    {/* Stats */}
-                                    {page._count && (
-                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                            <span>{page._count.comments} yorum</span>
-                                            {page._count.files > 0 && (
-                                                <span>{page._count.files} dosya</span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            )}
-
-            {/* Empty State */}
-            {!loading && pages.length === 0 && (
-                <div className="text-center py-12">
-                    <p className="text-muted-foreground mb-4">
-                        {filters.query || filters.pageType
-                            ? 'Arama kriterlerinize uygun sayfa bulunamadı.'
-                            : 'Henüz yayınlanmış sayfa bulunmuyor.'}
-                    </p>
-                    <Link href="/pages/create">
-                        <Button>İlk Sayfayı Oluştur</Button>
-                    </Link>
-                </div>
-            )}
+                {/* Empty State */}
+                {!loading && pages.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="space-y-4 text-center">
+                            <p className="text-muted-foreground mb-4">
+                                {filters.query || filters.pageType
+                                    ? 'Arama kriterlerinize uygun sayfa bulunamadı.'
+                                    : 'Henüz yayınlanmış sayfa bulunmuyor.'}
+                            </p>
+                            <Link href="/pages/create">
+                                <Button>İlk Sayfayı Oluştur</Button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {/* Pagination */}
             {!loading && pages.length > 0 && pagination.totalPages > 1 && (

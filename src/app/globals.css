@@ -107,6 +107,16 @@
   @apply animate-spin rounded-full border-2 border-border border-t-primary;
 }
 
+/* Force scrollbar to always be visible to prevent layout shifts */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -124,6 +134,22 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--foreground));
   opacity: 0.8;
+}
+
+/* Prevent layout shifts during content changes */
+.content-container {
+  min-height: 100vh;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Smooth transitions for filtering */
+.filter-transition {
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+.filter-transition.loading {
+  opacity: 0.7;
+  transform: translateY(2px);
 }
 
 /* Mobile optimizations */

@@ -39,7 +39,7 @@ export default async function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       {/* Header */}
       <header className="bg-background flex-shrink-0">
         <div className="container mx-auto px-4 py-3">
@@ -73,7 +73,7 @@ export default async function Home() {
       </section>
 
       {/* Published Pages Section */}
-      <section className="flex-1 bg-muted/30 overflow-y-auto">
+      <section className="flex-1 bg-muted/30">
         <div className="container mx-auto px-4 py-6">
           <div className="max-w-7xl mx-auto">
             {/* Home Page Content with Interactive Navigation */}
