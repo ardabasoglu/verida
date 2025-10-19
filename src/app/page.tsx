@@ -1,10 +1,8 @@
 import Image from 'next/image';
-import { StatsQueries } from '@/lib/query-optimizer';
 import { prisma } from '@/lib/prisma';
 import HomePageContent from '@/components/home/home-page-content';
 
 export default async function Home() {
-  const stats = await StatsQueries.getGlobalStats();
 
   // Get total count of published pages for pagination
   const totalPublishedPages = await prisma.page.count({
@@ -80,7 +78,6 @@ export default async function Home() {
             <HomePageContent
               initialPages={initialPages}
               initialPagination={initialPagination}
-              stats={stats}
             />
           </div>
         </div>

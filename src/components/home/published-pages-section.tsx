@@ -15,7 +15,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Search, Filter, Eye } from 'lucide-react';
+import { Search, Filter, Eye, FileText, Users, Settings, BarChart3 } from 'lucide-react';
+
+interface PageTypeConfig {
+    label: string;
+    icon: any;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+}
 
 interface PublishedPagesSectionProps {
     initialPages: PageWithRelations[];
@@ -28,6 +36,7 @@ interface PublishedPagesSectionProps {
     selectedPageType?: ContentType | '';
     onPageTypeChange?: (pageType: ContentType | '') => void;
     onFilteredCountChange?: (count: number) => void;
+    pageTypeConfig?: Record<string, PageTypeConfig>;
 }
 
 const PAGE_TYPE_LABELS = {
@@ -50,6 +59,7 @@ export default function PublishedPagesSection({
     selectedPageType = '',
     onPageTypeChange,
     onFilteredCountChange,
+    pageTypeConfig,
 }: PublishedPagesSectionProps) {
     const [pages, setPages] = useState<PageWithRelations[]>(initialPages);
     const [loading, setLoading] = useState(false);
@@ -192,36 +202,68 @@ export default function PublishedPagesSection({
 
     return (
         <div className="w-full min-h-[600px]">
-            {/* Header with Search */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">Yayınlanan Sayfalar</h2>
                     <p className="text-muted-foreground">En son yayınlanan içerikleri keşfedin</p>
                 </div>
-
-                <div className="flex items-center gap-2">
-                    <Button
-                        onClick={() => setShowFilters(!showFilters)}
-                        variant="outline"
-                        size="sm"
-                        className="flex items-center gap-2"
-                    >
-                        <Filter className="h-4 w-4" />
-                        Filtreler
+                <Link href="/pages">
+                    <Button size="sm" className="flex items-center gap-2">
+                        <Eye className="h-4 w-4" />
+                        Tümünü Gör
                     </Button>
-                    <Link href="/pages">
-                        <Button size="sm" className="flex items-center gap-2">
-                            <Eye className="h-4 w-4" />
-                            Tümünü Gör
-                        </Button>
-                    </Link>
-                </div>
+                </Link>
             </div>
 
-            {/* Quick Search */}
-            <Card className="mb-6">
-                <CardContent className="pt-4">
-                    <form onSubmit={handleSearch} className="flex gap-2">
+            {/* Compact Combined Filters */}
+            <div className="mb-6 space-y-3">
+                {/* Page Type Quick Filters */}
+                {pageTypeConfig && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-medium text-muted-foreground mr-2">Tür:</span>
+                        <button
+                            onClick={() => {
+                                setFilters((prev) => ({ ...prev, pageType: '', page: 1 }));
+                                if (onPageTypeChange) onPageTypeChange('');
+                            }}
+                            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                                !filters.pageType 
+                                    ? 'bg-primary text-primary-foreground border-primary' 
+                                    : 'bg-background hover:bg-muted border-border'
+                            }`}
+                        >
+                            Tümü
+                        </button>
+                        {Object.entries(pageTypeConfig).map(([type, config]) => {
+                            const Icon = config.icon;
+                            const isSelected = filters.pageType === type;
+                            return (
+                                <button
+                                    key={type}
+                                    onClick={() => {
+                                        const newPageType = type as ContentType;
+                                        setFilters((prev) => ({ ...prev, pageType: newPageType, page: 1 }));
+                                        if (onPageTypeChange) onPageTypeChange(newPageType);
+                                    }}
+                                    className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full border transition-colors ${
+                                        isSelected 
+                                            ? `${config.bgColor} ${config.color} ${config.borderColor} border-2` 
+                                            : 'bg-background hover:bg-muted border-border'
+                                    }`}
+                                >
+                                    <Icon className="h-3 w-3" />
+                                    {config.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Search and Sort Controls */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    {/* Search */}
+                    <form onSubmit={handleSearch} className="flex gap-2 flex-1">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -230,150 +272,104 @@ export default function PublishedPagesSection({
                                 onChange={(e) =>
                                     setFilters((prev) => ({ ...prev, query: e.target.value }))
                                 }
-                                className="pl-10"
-                                placeholder="Başlık, içerik veya etiket ara..."
+                                className="pl-10 h-9"
+                                placeholder="Ara..."
                             />
                         </div>
-                        <Button type="submit" size="sm">
+                        <Button type="submit" size="sm" className="h-9">
                             Ara
                         </Button>
                     </form>
-                </CardContent>
-            </Card>
 
-            {/* Advanced Filters */}
-            {showFilters && (
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Gelişmiş Filtreler</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {/* Page Type Filter */}
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                    Sayfa Tipi
-                                </label>
-                                <Select
-                                    value={filters.pageType || 'all'}
-                                    onValueChange={(value) => {
-                                        const newPageType = value === 'all' ? '' : (value as ContentType);
-                                        setFilters((prev) => ({
-                                            ...prev,
-                                            pageType: newPageType,
-                                            page: 1,
-                                        }));
-                                        // Notify parent component of the change
-                                        if (onPageTypeChange) {
-                                            onPageTypeChange(newPageType);
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Tüm Tipler" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Tüm Tipler</SelectItem>
-                                        {Object.entries(PAGE_TYPE_LABELS).map(([value, label]) => (
-                                            <SelectItem key={value} value={value}>
-                                                {label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                    {/* Sort Controls */}
+                    <div className="flex gap-2">
+                        <Select
+                            value={filters.sortBy}
+                            onValueChange={(value) =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    sortBy: value as typeof filters.sortBy,
+                                    page: 1,
+                                }))
+                            }
+                        >
+                            <SelectTrigger className="w-32 h-9">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="date">Tarih</SelectItem>
+                                <SelectItem value="title">Başlık</SelectItem>
+                                <SelectItem value="pageType">Tür</SelectItem>
+                                <SelectItem value="author">Yazar</SelectItem>
+                                {filters.query && (
+                                    <SelectItem value="relevance">İlgi</SelectItem>
+                                )}
+                            </SelectContent>
+                        </Select>
 
-                            {/* Sort By */}
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                    Sıralama
-                                </label>
-                                <Select
-                                    value={filters.sortBy}
-                                    onValueChange={(value) =>
-                                        setFilters((prev) => ({
-                                            ...prev,
-                                            sortBy: value as typeof filters.sortBy,
-                                            page: 1,
-                                        }))
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="date">Tarihe Göre</SelectItem>
-                                        <SelectItem value="title">Başlığa Göre</SelectItem>
-                                        <SelectItem value="pageType">Tipe Göre</SelectItem>
-                                        <SelectItem value="author">Yazara Göre</SelectItem>
-                                        {filters.query && (
-                                            <SelectItem value="relevance">İlgiye Göre</SelectItem>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <Select
+                            value={filters.sortOrder}
+                            onValueChange={(value) =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    sortOrder: value as 'asc' | 'desc',
+                                    page: 1,
+                                }))
+                            }
+                        >
+                            <SelectTrigger className="w-20 h-9">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="desc">↓</SelectItem>
+                                <SelectItem value="asc">↑</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
 
-                            {/* Sort Order */}
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                    Yön
-                                </label>
-                                <Select
-                                    value={filters.sortOrder}
-                                    onValueChange={(value) =>
-                                        setFilters((prev) => ({
-                                            ...prev,
-                                            sortOrder: value as 'asc' | 'desc',
-                                            page: 1,
-                                        }))
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="desc">Yeniden Eskiye</SelectItem>
-                                        <SelectItem value="asc">Eskiden Yeniye</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-2 mt-4">
-                            <Button
-                                type="button"
-                                onClick={() => {
-                                    setFilters({
-                                        query: '',
-                                        pageType: '',
+                {/* Active Filters Indicator */}
+                {(filters.query || filters.pageType) && (
+                    <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">Aktif filtreler:</span>
+                        {filters.pageType && pageTypeConfig && pageTypeConfig[filters.pageType] && (
+                            <span className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs">
+                                {pageTypeConfig[filters.pageType]?.label}
+                            </span>
+                        )}
+                        {filters.query && (
+                            <span className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs">
+                                "{filters.query}"
+                            </span>
+                        )}
+                        <button
+                            onClick={() => {
+                                setFilters({
+                                    query: '',
+                                    pageType: '',
+                                    page: 1,
+                                    limit: 6,
+                                    sortBy: 'date',
+                                    sortOrder: 'desc',
+                                });
+                                setPages(initialPages);
+                                setPagination(
+                                    initialPagination || {
                                         page: 1,
                                         limit: 6,
-                                        sortBy: 'date',
-                                        sortOrder: 'desc',
-                                    });
-                                    setPages(initialPages);
-                                    setPagination(
-                                        initialPagination || {
-                                            page: 1,
-                                            limit: 6,
-                                            total: initialPages.length,
-                                            totalPages: Math.ceil(initialPages.length / 6),
-                                        }
-                                    );
-                                    // Notify parent component to clear the filter
-                                    if (onPageTypeChange) {
-                                        onPageTypeChange('');
+                                        total: initialPages.length,
+                                        totalPages: Math.ceil(initialPages.length / 6),
                                     }
-                                }}
-                                variant="outline"
-                                size="sm"
-                            >
-                                Filtreleri Temizle
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+                                );
+                                if (onPageTypeChange) onPageTypeChange('');
+                            }}
+                            className="text-xs text-muted-foreground hover:text-foreground underline"
+                        >
+                            Temizle
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {/* Error Message */}
             {error && (
