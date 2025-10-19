@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ContentType } from '@prisma/client';
 import { PageWithRelations } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -15,7 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Search, Filter, Eye, FileText, Users, Settings, BarChart3 } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface PageTypeConfig {
     label: string;
@@ -64,7 +64,6 @@ export default function PublishedPagesSection({
     const [pages, setPages] = useState<PageWithRelations[]>(initialPages);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [showFilters, setShowFilters] = useState(false);
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -203,17 +202,11 @@ export default function PublishedPagesSection({
     return (
         <div className="w-full min-h-[600px]">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <div className="mb-4">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">Yayınlanan Sayfalar</h2>
                     <p className="text-muted-foreground">En son yayınlanan içerikleri keşfedin</p>
                 </div>
-                <Link href="/pages">
-                    <Button size="sm" className="flex items-center gap-2">
-                        <Eye className="h-4 w-4" />
-                        Tümünü Gör
-                    </Button>
-                </Link>
             </div>
 
             {/* Compact Combined Filters */}
