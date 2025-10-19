@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import HomePageContent from '@/components/home/home-page-content';
 
@@ -56,16 +55,7 @@ export default async function Home() {
       <section className="py-3 bg-gradient-to-r from-background to-muted/20 flex-shrink-0">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-4">
-              <p className="text-sm md:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Verida platformuna hoş geldiniz. Kurumsal bilgi yönetiminde
-                verimlilik ve işbirliğini bir araya getiren platformumuz, önemli
-                bilgileri merkezi bir yerde toplar. Güvenli erişim kontrolleri
-                ile takımınızın ihtiyaç duyduğu bilgilere anında ulaşmasını
-                sağlar ve iş süreçlerinizi dijitalleştirerek operasyonel
-                verimliliği artırır.
-              </p>
-            </div>
+
           </div>
         </div>
       </section>
