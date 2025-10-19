@@ -47,7 +47,7 @@ export default async function Home() {
       <header className="bg-background flex-shrink-0">
         <div className="container mx-auto px-4 py-3">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary tracking-wider">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider">
               VERIDA
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mt-1 font-medium">
