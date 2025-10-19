@@ -55,6 +55,9 @@ export default function UserList({
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showRoleManager, setShowRoleManager] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState<string>('');
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
 
   const getRoleDisplayName = (role: UserRole) => {
     switch (role) {
@@ -131,6 +134,53 @@ export default function UserList({
   const handleRoleChange = (user: User) => {
     setSelectedUser(user);
     setShowRoleManager(true);
+  };
+
+  const handleEditName = (user: User) => {
+    setEditingUserId(user.id);
+    setEditingName(user.name || '');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUserId(null);
+    setEditingName('');
+  };
+
+  const handleSaveName = async (userId: string) => {
+    if (!editingName.trim()) {
+      alert('İsim boş olamaz');
+      return;
+    }
+
+    try {
+      setUpdatingUserId(userId);
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: editingName.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'İsim güncellenirken hata oluştu');
+      }
+
+      setEditingUserId(null);
+      setEditingName('');
+      onUserUpdated();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'İsim güncellenirken hata oluştu'
+      );
+    } finally {
+      setUpdatingUserId(null);
+    }
   };
 
   const canModifyUser = (user: User) => {
@@ -229,7 +279,7 @@ export default function UserList({
             </thead>
             <tbody className="bg-card divide-y divide-gray-200">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-muted">
+                <tr key={user.id} className="hover:bg-muted group">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
@@ -239,10 +289,73 @@ export default function UserList({
                           </span>
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-foreground">
-                          {user.name || 'İsimsiz Kullanıcı'}
-                        </div>
+                      <div className="ml-4 flex-1">
+                        {editingUserId === user.id ? (
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="text"
+                              value={editingName}
+                              onChange={(e) => setEditingName(e.target.value)}
+                              className="text-sm font-medium text-foreground bg-background border border-border rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Kullanıcı adı"
+                              disabled={updatingUserId === user.id}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveName(user.id);
+                                } else if (e.key === 'Escape') {
+                                  handleCancelEdit();
+                                }
+                              }}
+                              autoFocus
+                            />
+                            <div className="flex items-center space-x-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleSaveName(user.id)}
+                                disabled={updatingUserId === user.id}
+                                className="h-6 w-6 p-0"
+                              >
+                                {updatingUserId === user.id ? (
+                                  <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                                ) : (
+                                  <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleCancelEdit}
+                                disabled={updatingUserId === user.id}
+                                className="h-6 w-6 p-0"
+                              >
+                                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <div className="text-sm font-medium text-foreground">
+                              {user.name || 'İsimsiz Kullanıcı'}
+                            </div>
+                            {canModifyUser(user) && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleEditName(user)}
+                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </Button>
+                            )}
+                          </div>
+                        )}
                         <div className="text-sm text-muted-foreground">
                           {user.email}
                         </div>
