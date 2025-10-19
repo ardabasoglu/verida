@@ -87,7 +87,7 @@ export default function PublishedPagesSection({
     const fetchPages = useCallback(async () => {
         setLoading(true);
         setError(null);
-        
+
         // Add a small delay to prevent flickering on fast responses
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 150));
 
@@ -200,7 +200,7 @@ export default function PublishedPagesSection({
     };
 
     return (
-        <div className="w-full min-h-[600px]">
+        <div className="w-full min-h-[600px] relative">
             {/* Header */}
             <div className="mb-4">
                 <div>
@@ -210,7 +210,7 @@ export default function PublishedPagesSection({
             </div>
 
             {/* Compact Combined Filters */}
-            <div className="mb-6 space-y-3">
+            <div className="mb-6 space-y-3 filter-section">
                 {/* Page Type Quick Filters */}
                 {pageTypeConfig && (
                     <div className="flex flex-wrap items-center gap-2">
@@ -220,11 +220,10 @@ export default function PublishedPagesSection({
                                 setFilters((prev) => ({ ...prev, pageType: '', page: 1 }));
                                 if (onPageTypeChange) onPageTypeChange('');
                             }}
-                            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                                !filters.pageType 
-                                    ? 'bg-primary text-primary-foreground border-primary' 
-                                    : 'bg-background hover:bg-muted border-border'
-                            }`}
+                            className={`px-3 py-1 text-xs rounded-full border transition-colors ${!filters.pageType
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background hover:bg-muted border-border'
+                                }`}
                         >
                             Tümü
                         </button>
@@ -239,11 +238,10 @@ export default function PublishedPagesSection({
                                         setFilters((prev) => ({ ...prev, pageType: newPageType, page: 1 }));
                                         if (onPageTypeChange) onPageTypeChange(newPageType);
                                     }}
-                                    className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full border transition-colors ${
-                                        isSelected 
-                                            ? `${config.bgColor} ${config.color} ${config.borderColor} border-2` 
-                                            : 'bg-background hover:bg-muted border-border'
-                                    }`}
+                                    className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full border transition-colors ${isSelected
+                                        ? `${config.bgColor} ${config.color} ${config.borderColor} border-2`
+                                        : 'bg-background hover:bg-muted border-border'
+                                        }`}
                                 >
                                     <Icon className="h-3 w-3" />
                                     {config.label}
@@ -275,7 +273,7 @@ export default function PublishedPagesSection({
                     </form>
 
                     {/* Sort Controls */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 dropdown-container">
                         <Select
                             value={filters.sortBy}
                             onValueChange={(value) =>
@@ -289,7 +287,11 @@ export default function PublishedPagesSection({
                             <SelectTrigger className="w-32 h-9">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                position="popper"
+                                sideOffset={4}
+                                className="z-[100] max-h-[200px]"
+                            >
                                 <SelectItem value="date">Tarih</SelectItem>
                                 <SelectItem value="title">Başlık</SelectItem>
                                 <SelectItem value="pageType">Tür</SelectItem>
@@ -313,7 +315,11 @@ export default function PublishedPagesSection({
                             <SelectTrigger className="w-20 h-9">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                position="popper"
+                                sideOffset={4}
+                                className="z-[100] max-h-[200px]"
+                            >
                                 <SelectItem value="desc">↓</SelectItem>
                                 <SelectItem value="asc">↑</SelectItem>
                             </SelectContent>
