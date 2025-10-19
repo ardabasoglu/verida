@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import HomePageContent from '@/components/home/home-page-content';
+import Image from 'next/image';
 
 export default async function Home() {
 
@@ -40,13 +41,27 @@ export default async function Home() {
       {/* Header */}
       <header className="bg-background flex-shrink-0">
         <div className="container mx-auto px-4 py-3">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider">
-              VERIDA
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mt-1 font-medium">
-              Kurumsal Bilgi Yönetim Platformu
-            </p>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-left">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
+                  VERIDA
+                </h1>
+                {/* DGM Logo */}
+                <div className="flex-shrink-0">
+                  <Image
+                    src="/dgm-logo.png"
+                    alt="DGM Logo"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 object-contain"
+                  />
+                </div>
+              </div>
+              <p className="text-sm md:text-base text-muted-foreground mt-1 font-medium">
+                Kurumsal Bilgi Yönetim Platformu
+              </p>
+            </div>
           </div>
         </div>
       </header>
