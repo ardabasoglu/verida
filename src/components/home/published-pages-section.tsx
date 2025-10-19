@@ -19,7 +19,7 @@ import { Search } from 'lucide-react';
 
 interface PageTypeConfig {
     label: string;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     color: string;
     bgColor: string;
     borderColor: string;
@@ -161,7 +161,7 @@ export default function PublishedPagesSection({
 
         // Always fetch when filters change after initial load
         fetchPages();
-    }, [filters, fetchPages, isInitialLoad]);
+    }, [filters, fetchPages, isInitialLoad, onFilteredCountChange]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -338,7 +338,7 @@ export default function PublishedPagesSection({
                         )}
                         {filters.query && (
                             <span className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs">
-                                "{filters.query}"
+                                &quot;{filters.query}&quot;
                             </span>
                         )}
                         <button

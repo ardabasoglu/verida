@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { FileText, Users, Settings, BarChart3 } from 'lucide-react';
 import { ContentType } from '@prisma/client';
 import { PageWithRelations } from '@/types';
 import PublishedPagesSection from './published-pages-section';
+import UnreadPagesSection from './unread-pages-section';
 
 interface HomePageContentProps {
   initialPages: PageWithRelations[];
@@ -57,12 +58,15 @@ export default function HomePageContent({
     setSelectedPageType(pageType);
   };
 
-  const handleFilteredCountChange = (count: number) => {
+  const handleFilteredCountChange = useCallback(() => {
     // This function is used by the child component to report filtered count
-  };
+  }, []);
 
   return (
     <>
+      {/* Unread Pages Section */}
+      <UnreadPagesSection pageTypeConfig={PAGE_TYPE_CONFIG} />
+
       {/* Published Pages with integrated filters */}
       <PublishedPagesSection
         initialPages={initialPages}

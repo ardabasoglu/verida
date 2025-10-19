@@ -10,7 +10,7 @@ import {
   PlusIcon,
   ChartBarIcon,
   UserGroupIcon,
-
+  EyeSlashIcon,
 } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
@@ -53,6 +53,12 @@ const navigationItems: NavItem[] = [
     href: '/admin/users',
     icon: UserGroupIcon,
     roles: ['SYSTEM_ADMIN', 'ADMIN'],
+  },
+  {
+    name: 'Okuma Durumu Yönetimi',
+    href: '/admin/read-status',
+    icon: EyeSlashIcon,
+    roles: ['SYSTEM_ADMIN'],
   },
 ];
 

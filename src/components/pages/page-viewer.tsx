@@ -44,7 +44,22 @@ export default function PageViewer({
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+
+    // Log page view when component mounts
+    const logPageView = async () => {
+      if (session?.user?.id) {
+        try {
+          await fetch(`/api/pages/${page.id}/mark-read`, {
+            method: 'POST',
+          });
+        } catch (error) {
+          console.error('Error logging page view:', error);
+        }
+      }
+    };
+
+    logPageView();
+  }, [page.id, session?.user?.id]);
 
   // Sanitize HTML content
   const sanitizedContent = useMemo(() => {
