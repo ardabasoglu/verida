@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
-  
+
   // Build configuration
   eslint: {
     // Only ignore during builds in development
@@ -15,15 +15,16 @@ const nextConfig: NextConfig = {
     // Only ignore type errors in development
     ignoreBuildErrors: process.env.NODE_ENV === 'development',
   },
-  
+
   // Image optimization
   images: {
+    unoptimized: true,
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  
+
   // Experimental features for performance
   experimental: {
     optimizeCss: true,

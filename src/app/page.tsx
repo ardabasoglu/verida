@@ -1,13 +1,48 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatsQueries } from '@/lib/query-optimizer';
 import { FileText, Users, Settings, BarChart3 } from 'lucide-react';
 
+import { prisma } from '@/lib/prisma';
+import PublishedPagesSection from '@/components/home/published-pages-section';
+
 export default async function Home() {
   const stats = await StatsQueries.getGlobalStats();
+
+  // Get total count of published pages for pagination
+  const totalPublishedPages = await prisma.page.count({
+    where: { published: true },
+  });
+
+  // Fetch initial published pages for the home page
+  const initialPages = await prisma.page.findMany({
+    where: { published: true },
+    include: {
+      author: true,
+      files: true,
+      comments: {
+        include: {
+          user: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      _count: { select: { comments: true, files: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 6, // Show 6 pages initially on home page
+    skip: 0,
+  });
+
+  // Create initial pagination data
+  const initialPagination = {
+    page: 1,
+    limit: 6,
+    total: totalPublishedPages,
+    totalPages: Math.ceil(totalPublishedPages / 6),
+  };
+
   return (
-    <main className="h-screen bg-background overflow-hidden flex flex-col">
+    <main className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="bg-background flex-shrink-0">
         <div className="container mx-auto px-4 py-3">
@@ -40,72 +75,81 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Page Type Navigation */}
+      {/* Published Pages Section */}
       <section className="flex-1 bg-muted/30 overflow-y-auto">
-        <div className="container mx-auto px-4 py-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-lg font-bold mb-3 text-center">
-              Sayfa Türleri
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-              <Link href="/pages?type=bilgi">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                  <CardContent className="pt-2 pb-2">
-                    <FileText className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <div className="text-xs font-medium">Bilgi</div>
-                  </CardContent>
-                </Card>
-              </Link>
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Quick Navigation */}
+            <div className="mb-8">
+              <h2 className="text-lg font-bold mb-4 text-center">
+                Sayfa Türleri
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <a href="/pages?pageType=INFO">
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
+                    <CardContent className="pt-3 pb-3">
+                      <FileText className="h-6 w-6 text-primary mx-auto mb-2" />
+                      <div className="text-sm font-medium">Bilgi</div>
+                    </CardContent>
+                  </Card>
+                </a>
 
-              <Link href="/pages?type=prosedur">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                  <CardContent className="pt-2 pb-2">
-                    <Settings className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <div className="text-xs font-medium">Prosedür</div>
-                  </CardContent>
-                </Card>
-              </Link>
+                <a href="/pages?pageType=PROCEDURE">
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
+                    <CardContent className="pt-3 pb-3">
+                      <Settings className="h-6 w-6 text-primary mx-auto mb-2" />
+                      <div className="text-sm font-medium">Prosedür</div>
+                    </CardContent>
+                  </Card>
+                </a>
 
-              <Link href="/pages?type=duyuru">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                  <CardContent className="pt-2 pb-2">
-                    <Users className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <div className="text-xs font-medium">Duyuru</div>
-                  </CardContent>
-                </Card>
-              </Link>
+                <a href="/pages?pageType=ANNOUNCEMENT">
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
+                    <CardContent className="pt-3 pb-3">
+                      <Users className="h-6 w-6 text-primary mx-auto mb-2" />
+                      <div className="text-sm font-medium">Duyuru</div>
+                    </CardContent>
+                  </Card>
+                </a>
 
-              <Link href="/pages?type=uyari">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                  <CardContent className="pt-2 pb-2">
-                    <BarChart3 className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <div className="text-xs font-medium">Uyarı</div>
+                <a href="/pages?pageType=WARNING">
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
+                    <CardContent className="pt-3 pb-3">
+                      <BarChart3 className="h-6 w-6 text-primary mx-auto mb-2" />
+                      <div className="text-sm font-medium">Uyarı</div>
+                    </CardContent>
+                  </Card>
+                </a>
+              </div>
+
+              {/* App Statistics */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <Card className="text-center">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="text-2xl font-bold text-primary mb-1">
+                      {stats.totalPages}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Toplam Sayfa
+                    </div>
                   </CardContent>
                 </Card>
-              </Link>
+                <Card className="text-center">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="text-2xl font-bold text-primary mb-1">
+                      {stats.totalUsers}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Kullanıcı</div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
-            {/* App Statistics */}
-            <div className="grid grid-cols-2 gap-3">
-              <Card className="text-center">
-                <CardContent className="pt-3 pb-3">
-                  <div className="text-lg font-bold text-primary mb-1">
-                    {stats.totalPages}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Toplam Sayfa
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="text-center">
-                <CardContent className="pt-3 pb-3">
-                  <div className="text-lg font-bold text-primary mb-1">
-                    {stats.totalUsers}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Kullanıcı</div>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Published Pages */}
+            <PublishedPagesSection
+              initialPages={initialPages}
+              initialPagination={initialPagination}
+            />
           </div>
         </div>
       </section>
