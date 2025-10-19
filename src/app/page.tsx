@@ -83,31 +83,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-muted/50 py-4 flex-shrink-0">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-center md:text-left mb-3 md:mb-0">
-              <h3 className="text-sm font-semibold mb-1">Verida</h3>
-              <p className="text-xs text-muted-foreground">
-                Kurumsal Bilgi Yönetim Platformu
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-2">Geliştiren</p>
-              <div className="h-6 flex items-center justify-center">
-                <Image
-                  src="/dgm-logo.png"
-                  alt="DGM Gümrük Logo"
-                  width={24}
-                  height={24}
-                  className="h-6 w-auto mx-auto opacity-60"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+
     </main>
   );
 }
