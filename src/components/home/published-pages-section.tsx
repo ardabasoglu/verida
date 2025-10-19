@@ -25,6 +25,9 @@ interface PublishedPagesSectionProps {
         total: number;
         totalPages: number;
     };
+    selectedPageType?: ContentType | '';
+    onPageTypeChange?: (pageType: ContentType | '') => void;
+    onFilteredCountChange?: (count: number) => void;
 }
 
 const PAGE_TYPE_LABELS = {
@@ -44,6 +47,9 @@ const PAGE_TYPE_COLORS = {
 export default function PublishedPagesSection({
     initialPages,
     initialPagination,
+    selectedPageType = '',
+    onPageTypeChange,
+    onFilteredCountChange,
 }: PublishedPagesSectionProps) {
     const [pages, setPages] = useState<PageWithRelations[]>(initialPages);
     const [loading, setLoading] = useState(false);
@@ -53,7 +59,7 @@ export default function PublishedPagesSection({
     // Filter states
     const [filters, setFilters] = useState({
         query: '',
-        pageType: '' as ContentType | '',
+        pageType: selectedPageType || ('' as ContentType | ''),
         page: 1,
         limit: 6, // Show 6 pages per page on home
         sortBy: 'date' as 'date' | 'title' | 'pageType' | 'author' | 'relevance',
@@ -105,6 +111,10 @@ export default function PublishedPagesSection({
             if (result.success) {
                 setPages(result.data);
                 setPagination(result.pagination);
+                // Notify parent of filtered count
+                if (onFilteredCountChange) {
+                    onFilteredCountChange(result.pagination.total);
+                }
             } else {
                 throw new Error(result.error || 'Bir hata oluştu');
             }
@@ -118,6 +128,15 @@ export default function PublishedPagesSection({
 
     // Track if this is the initial load
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+    // Update filters when selectedPageType changes from parent
+    useEffect(() => {
+        setFilters((prev) => ({
+            ...prev,
+            pageType: selectedPageType || '',
+            page: 1, // Reset to first page when filter changes
+        }));
+    }, [selectedPageType]);
 
     // Trigger search when filters change (but not on initial load)
     useEffect(() => {
@@ -232,13 +251,18 @@ export default function PublishedPagesSection({
                                 </label>
                                 <Select
                                     value={filters.pageType || 'all'}
-                                    onValueChange={(value) =>
+                                    onValueChange={(value) => {
+                                        const newPageType = value === 'all' ? '' : (value as ContentType);
                                         setFilters((prev) => ({
                                             ...prev,
-                                            pageType: value === 'all' ? '' : (value as ContentType),
+                                            pageType: newPageType,
                                             page: 1,
-                                        }))
-                                    }
+                                        }));
+                                        // Notify parent component of the change
+                                        if (onPageTypeChange) {
+                                            onPageTypeChange(newPageType);
+                                        }
+                                    }}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Tüm Tipler" />
@@ -331,6 +355,10 @@ export default function PublishedPagesSection({
                                             totalPages: Math.ceil(initialPages.length / 6),
                                         }
                                     );
+                                    // Notify parent component to clear the filter
+                                    if (onPageTypeChange) {
+                                        onPageTypeChange('');
+                                    }
                                 }}
                                 variant="outline"
                                 size="sm"

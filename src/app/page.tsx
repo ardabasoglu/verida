@@ -1,10 +1,7 @@
 import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
 import { StatsQueries } from '@/lib/query-optimizer';
-import { FileText, Users, Settings, BarChart3 } from 'lucide-react';
-
 import { prisma } from '@/lib/prisma';
-import PublishedPagesSection from '@/components/home/published-pages-section';
+import HomePageContent from '@/components/home/home-page-content';
 
 export default async function Home() {
   const stats = await StatsQueries.getGlobalStats();
@@ -79,76 +76,11 @@ export default async function Home() {
       <section className="flex-1 bg-muted/30 overflow-y-auto">
         <div className="container mx-auto px-4 py-6">
           <div className="max-w-7xl mx-auto">
-            {/* Quick Navigation */}
-            <div className="mb-8">
-              <h2 className="text-lg font-bold mb-4 text-center">
-                Sayfa Türleri
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                <a href="/pages?pageType=INFO">
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                    <CardContent className="pt-3 pb-3">
-                      <FileText className="h-6 w-6 text-primary mx-auto mb-2" />
-                      <div className="text-sm font-medium">Bilgi</div>
-                    </CardContent>
-                  </Card>
-                </a>
-
-                <a href="/pages?pageType=PROCEDURE">
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                    <CardContent className="pt-3 pb-3">
-                      <Settings className="h-6 w-6 text-primary mx-auto mb-2" />
-                      <div className="text-sm font-medium">Prosedür</div>
-                    </CardContent>
-                  </Card>
-                </a>
-
-                <a href="/pages?pageType=ANNOUNCEMENT">
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                    <CardContent className="pt-3 pb-3">
-                      <Users className="h-6 w-6 text-primary mx-auto mb-2" />
-                      <div className="text-sm font-medium">Duyuru</div>
-                    </CardContent>
-                  </Card>
-                </a>
-
-                <a href="/pages?pageType=WARNING">
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer text-center">
-                    <CardContent className="pt-3 pb-3">
-                      <BarChart3 className="h-6 w-6 text-primary mx-auto mb-2" />
-                      <div className="text-sm font-medium">Uyarı</div>
-                    </CardContent>
-                  </Card>
-                </a>
-              </div>
-
-              {/* App Statistics */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <Card className="text-center">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="text-2xl font-bold text-primary mb-1">
-                      {stats.totalPages}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Toplam Sayfa
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="text-center">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="text-2xl font-bold text-primary mb-1">
-                      {stats.totalUsers}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Kullanıcı</div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Published Pages */}
-            <PublishedPagesSection
+            {/* Home Page Content with Interactive Navigation */}
+            <HomePageContent
               initialPages={initialPages}
               initialPagination={initialPagination}
+              stats={stats}
             />
           </div>
         </div>
