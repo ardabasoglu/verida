@@ -21,7 +21,15 @@ export function Header({ showSidebar = false }: HeaderProps) {
         style={{ backgroundColor: 'hsl(var(--background))' }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-end">
+          <div className="flex h-16 items-center justify-between">
+            {/* Left Side - Brand */}
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                <h1 className="text-lg font-semibold">Verida</h1>
+                <span className="text-sm text-muted-foreground hidden md:inline">Kurumsal Bilgi Uygulaması</span>
+              </Link>
+            </div>
+
             {/* Right Side */}
             <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Theme Toggle */}

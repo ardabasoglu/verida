@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { ContentType } from '@prisma/client';
 import { PageWithRelations } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,7 @@ export default function PublishedPagesSection({
     onFilteredCountChange,
     pageTypeConfig,
 }: PublishedPagesSectionProps) {
+    const { data: session } = useSession();
     const [pages, setPages] = useState<PageWithRelations[]>(initialPages);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -405,7 +407,11 @@ export default function PublishedPagesSection({
                                                 />
                                             </div>
                                             <Link
-                                                href={`/pages/${page.id}`}
+                                                href={
+                                                    session?.user?.role && ['ADMIN', 'SYSTEM_ADMIN'].includes(session.user.role)
+                                                        ? `/pages/${page.id}`
+                                                        : `/view/${page.id}`
+                                                }
                                                 className="block text-lg font-semibold text-card-foreground hover:text-primary transition-colors"
                                                 style={{
                                                     display: '-webkit-box',

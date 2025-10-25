@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { PageWithRelations } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -35,6 +36,7 @@ const PAGE_TYPE_COLORS = {
 } as const;
 
 export default function UnreadPagesSection({}: UnreadPagesSectionProps) {
+    const { data: session } = useSession();
     const [unreadPages, setUnreadPages] = useState<PageWithRelations[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -193,7 +195,11 @@ export default function UnreadPagesSection({}: UnreadPagesSectionProps) {
                                         </div>
                                     </div>
                                     <Link
-                                        href={`/pages/${page.id}`}
+                                        href={
+                                            session?.user?.role && ['ADMIN', 'SYSTEM_ADMIN'].includes(session.user.role)
+                                                ? `/pages/${page.id}`
+                                                : `/view/${page.id}`
+                                        }
                                         onClick={() => markAsRead(page.id)}
                                         className="block text-lg font-semibold text-card-foreground hover:text-primary transition-colors"
                                         style={{
@@ -251,7 +257,14 @@ export default function UnreadPagesSection({}: UnreadPagesSectionProps) {
 
                                 {/* Actions */}
                                 <div className="flex items-center gap-2 pt-2">
-                                    <Link href={`/pages/${page.id}`} onClick={() => markAsRead(page.id)}>
+                                    <Link 
+                                        href={
+                                            session?.user?.role && ['ADMIN', 'SYSTEM_ADMIN'].includes(session.user.role)
+                                                ? `/pages/${page.id}`
+                                                : `/view/${page.id}`
+                                        } 
+                                        onClick={() => markAsRead(page.id)}
+                                    >
                                         <Button size="sm" className="flex items-center gap-1">
                                             <Eye className="h-3 w-3" />
                                             Oku
