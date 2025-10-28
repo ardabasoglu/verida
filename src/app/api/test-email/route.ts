@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
         const possibleHosts = [
             'posteio',
             '10.0.1.11',
-            process.env.SMTP_HOST || 'posteio'
         ];
 
         let transporter;

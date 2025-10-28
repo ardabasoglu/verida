@@ -8,9 +8,7 @@ export async function GET() {
     try {
         const hosts = [
             'posteio',
-            'posteio.coolify',
-            'localhost',
-            '127.0.0.1'
+            '10.0.1.11',
         ];
 
         const results = [];

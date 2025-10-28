@@ -19,11 +19,8 @@ export async function POST(request: NextRequest) {
 
         // Try to connect to the SMTP server first
         const possibleHosts = [
-            process.env.SMTP_HOST || 'posteio',
             'posteio',
-            'posteio.coolify',
-            'localhost',
-            '127.0.0.1'
+            '10.0.1.11',
         ];
 
         let workingTransporter = null;

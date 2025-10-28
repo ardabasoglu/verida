@@ -127,7 +127,7 @@ export default function TestEmailPage() {
                     <div className="bg-muted p-4 rounded-lg">
                         <h3 className="font-semibold mb-2">Server Configuration</h3>
                         <div className="space-y-2 text-sm">
-                            <div><strong>Hosts (tried in order):</strong> posteio, posteio.coolify, localhost, 127.0.0.1</div>
+                            <div><strong>Hosts (tried in order):</strong> posteio, 10.0.1.11</div>
                             <div><strong>Port:</strong> 25</div>
                             <div><strong>Encryption:</strong> None</div>
                             <div><strong>From Name:</strong> VERIDA</div>
