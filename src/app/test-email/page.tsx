@@ -11,7 +11,15 @@ import { toast } from 'sonner';
 export default function TestEmailPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isTestingConnection, setIsTestingConnection] = useState(false);
-    const [connectionResults, setConnectionResults] = useState<any>(null);
+    const [connectionResults, setConnectionResults] = useState<{
+        connectionTests?: Array<{
+            host: string;
+            status: string;
+            port25: string;
+            dns?: string;
+            error?: string;
+        }>;
+    } | null>(null);
     const [emailData, setEmailData] = useState({
         to: 'arda.basoglu@dgmgumruk.com',
         subject: 'Poste.io Test Email',
@@ -146,7 +154,7 @@ export default function TestEmailPage() {
                         <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
                             <h4 className="font-semibold mb-2">Connection Test Results</h4>
                             <div className="space-y-2 text-sm">
-                                {connectionResults.connectionTests?.map((test: any, index: number) => (
+                                {connectionResults.connectionTests?.map((test, index: number) => (
                                     <div key={index} className={`p-2 rounded ${test.status === 'SUCCESS' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
                                         <div><strong>{test.host}</strong> - {test.status}</div>
                                         <div>Port 25: {test.port25}</div>

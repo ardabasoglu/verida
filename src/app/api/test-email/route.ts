@@ -42,9 +42,9 @@ export async function POST(request: NextRequest) {
                         rejectUnauthorized: false // Accept self-signed certificates
                     }
                 };
-                
+
                 transporter = nodemailer.createTransport(transportConfig);
-                
+
                 // Test the connection
                 await transporter.verify();
                 console.log(`Successfully connected to SMTP server at ${host}:25`);
