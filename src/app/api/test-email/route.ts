@@ -17,9 +17,6 @@ export async function POST(request: NextRequest) {
         // Try different possible hostnames for Coolify deployment
         const possibleHosts = [
             'posteio',
-            'posteio.coolify',
-            'localhost',
-            '127.0.0.1',
             '10.0.1.11',
             process.env.SMTP_HOST || 'posteio'
         ];
