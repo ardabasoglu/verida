@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   description: 'Kurumsal bilgi sayfalarını görüntüleyin ve yönetin',
 };
 
+// Disable static generation for this page since it requires database access
+export const dynamic = 'force-dynamic';
+
 export default async function PagesPage() {
   const session = await getServerSession(authOptions);
 

@@ -11,6 +11,9 @@ interface EditPageProps {
   }>;
 }
 
+// Disable static generation for this page since it requires database access
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({
   params,
 }: EditPageProps): Promise<Metadata> {

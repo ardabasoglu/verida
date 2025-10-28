@@ -2,6 +2,9 @@ import { prisma } from '@/lib/prisma';
 import HomePageContent from '@/components/home/home-page-content';
 import Image from 'next/image';
 
+// Disable static generation for this page since it requires database access
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
 
   // Get total count of published pages for pagination

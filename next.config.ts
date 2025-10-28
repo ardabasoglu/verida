@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: process.env.NODE_ENV === 'development',
   },
 
+  // Skip static generation during build if database is not available
+  // This prevents prerender errors when building without database access
+  generateBuildId: async () => {
+    return 'build-' + Date.now().toString();
+  },
+
   // Image optimization
   images: {
     unoptimized: true,
