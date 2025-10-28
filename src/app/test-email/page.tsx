@@ -10,11 +10,33 @@ import { toast } from 'sonner';
 
 export default function TestEmailPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [isTestingConnection, setIsTestingConnection] = useState(false);
+    const [connectionResults, setConnectionResults] = useState<any>(null);
     const [emailData, setEmailData] = useState({
         to: 'arda.basoglu@dgmgumruk.com',
         subject: 'Poste.io Test Email',
         message: 'This is a test email from the Verida application using Poste.io server setup on Coolify.'
     });
+
+    const handleConnectionTest = async () => {
+        setIsTestingConnection(true);
+        try {
+            const response = await fetch('/api/test-email-connection');
+            const result = await response.json();
+            setConnectionResults(result);
+
+            if (response.ok) {
+                toast.success('Connection test completed');
+            } else {
+                toast.error('Connection test failed');
+            }
+        } catch (error) {
+            toast.error('Failed to run connection test');
+            console.error('Connection test error:', error);
+        } finally {
+            setIsTestingConnection(false);
+        }
+    };
 
     const handleSendTest = async () => {
         setIsLoading(true);
@@ -55,8 +77,8 @@ export default function TestEmailPage() {
                     {/* Server Configuration Display */}
                     <div className="bg-muted p-4 rounded-lg">
                         <h3 className="font-semibold mb-2">Server Configuration</h3>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div><strong>Host:</strong> posteio</div>
+                        <div className="space-y-2 text-sm">
+                            <div><strong>Hosts (tried in order):</strong> posteio, posteio.coolify, localhost, 127.0.0.1</div>
                             <div><strong>Port:</strong> 25</div>
                             <div><strong>Encryption:</strong> None</div>
                             <div><strong>From Name:</strong> VERIDA</div>
@@ -99,23 +121,50 @@ export default function TestEmailPage() {
                             />
                         </div>
 
-                        <Button
-                            onClick={handleSendTest}
-                            disabled={isLoading}
-                            className="w-full"
-                        >
-                            {isLoading ? 'Sending...' : 'Send Test Email'}
-                        </Button>
+                        <div className="space-y-2">
+                            <Button
+                                onClick={handleConnectionTest}
+                                disabled={isTestingConnection}
+                                variant="outline"
+                                className="w-full"
+                            >
+                                {isTestingConnection ? 'Testing Connection...' : 'Test SMTP Connection'}
+                            </Button>
+
+                            <Button
+                                onClick={handleSendTest}
+                                disabled={isLoading}
+                                className="w-full"
+                            >
+                                {isLoading ? 'Sending...' : 'Send Test Email'}
+                            </Button>
+                        </div>
                     </div>
+
+                    {/* Connection Test Results */}
+                    {connectionResults && (
+                        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+                            <h4 className="font-semibold mb-2">Connection Test Results</h4>
+                            <div className="space-y-2 text-sm">
+                                {connectionResults.connectionTests?.map((test: any, index: number) => (
+                                    <div key={index} className={`p-2 rounded ${test.status === 'SUCCESS' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
+                                        <div><strong>{test.host}</strong> - {test.status}</div>
+                                        <div>Port 25: {test.port25}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Instructions */}
                     <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2">Test Instructions</h4>
                         <ul className="text-sm space-y-1">
                             <li>• Click &quot;Send Test Email&quot; to test the Poste.io configuration</li>
+                            <li>• The system will try multiple hostnames automatically</li>
                             <li>• Check the recipient&apos;s inbox for the test email</li>
-                            <li>• Monitor the browser console for any error details</li>
-                            <li>• Verify that the email appears to come from VERIDA &lt;no-reply@verida.dgmgumruk.com&gt;</li>
+                            <li>• Monitor the browser console for connection details</li>
+                            <li>• If all hosts fail, check your Coolify network configuration</li>
                         </ul>
                     </div>
                 </CardContent>

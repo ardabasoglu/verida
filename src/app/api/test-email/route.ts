@@ -14,16 +14,51 @@ export async function POST(request: NextRequest) {
         }
 
         // Create transporter with Poste.io configuration
-        const transportConfig = {
-            host: 'posteio',
-            port: 25,
-            secure: false, // No encryption
-            requireTLS: false,
-            tls: {
-                rejectUnauthorized: false // Accept self-signed certificates
+        // Try different possible hostnames for Coolify deployment
+        const possibleHosts = [
+            'posteio',
+            'posteio.coolify',
+            'localhost',
+            '127.0.0.1',
+            '10.0.1.11'
+            process.env.SMTP_HOST || 'posteio'
+        ];
+
+        let transporter;
+        let lastError;
+
+        // Try each host until one works or all fail
+        for (const host of possibleHosts) {
+            try {
+                const transportConfig = {
+                    host: host,
+                    port: 25,
+                    secure: false, // No encryption
+                    requireTLS: false,
+                    connectionTimeout: 5000, // 5 second timeout
+                    greetingTimeout: 5000,
+                    socketTimeout: 5000,
+                    tls: {
+                        rejectUnauthorized: false // Accept self-signed certificates
+                    }
+                };
+                
+                transporter = nodemailer.createTransport(transportConfig);
+                
+                // Test the connection
+                await transporter.verify();
+                console.log(`Successfully connected to SMTP server at ${host}:25`);
+                break;
+            } catch (error) {
+                console.log(`Failed to connect to ${host}:25 -`, error instanceof Error ? error.message : error);
+                lastError = error;
+                transporter = null;
             }
-        };
-        const transporter = nodemailer.createTransport(transportConfig);
+        }
+
+        if (!transporter) {
+            throw new Error(`Could not connect to any SMTP server. Last error: ${lastError instanceof Error ? lastError.message : 'Unknown error'}`);
+        }
 
         // Email options
         const mailOptions = {
