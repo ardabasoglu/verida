@@ -35,7 +35,7 @@ export default function TestEmailPage() {
         testDomain?: string;
     } | null>(null);
     const [emailData, setEmailData] = useState({
-        to: 'arda.basoglu@dgmgumruk.com',
+        to: 'test@localhost',
         subject: 'Poste.io Test Email',
         message: 'This is a test email from the Verida application using Poste.io server setup on Coolify.',
         testRecipient: 'test@verida.dgmgumruk.com' // Alternative test recipient
