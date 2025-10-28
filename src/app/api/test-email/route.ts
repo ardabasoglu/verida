@@ -14,15 +14,16 @@ export async function POST(request: NextRequest) {
         }
 
         // Create transporter with Poste.io configuration
-        const transporter = nodemailer.createTransport({
+        const transportConfig = {
             host: 'posteio',
             port: 25,
             secure: false, // No encryption
-            auth: false, // No authentication for local/internal server
+            requireTLS: false,
             tls: {
                 rejectUnauthorized: false // Accept self-signed certificates
             }
-        });
+        };
+        const transporter = nodemailer.createTransport(transportConfig);
 
         // Email options
         const mailOptions = {

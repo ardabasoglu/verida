@@ -140,7 +140,7 @@ export default function PublishedPagesSection({
             await minLoadingTime;
             setLoading(false);
         }
-    }, [filters]);
+    }, [filters, onFilteredCountChange]);
 
     // Track if this is the initial load
     const [isInitialLoad, setIsInitialLoad] = useState(true);
