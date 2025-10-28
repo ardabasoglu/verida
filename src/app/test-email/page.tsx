@@ -20,10 +20,25 @@ export default function TestEmailPage() {
             error?: string;
         }>;
     } | null>(null);
+    const [isTestingDomains, setIsTestingDomains] = useState(false);
+    const [domainResults, setDomainResults] = useState<{
+        results?: Array<{
+            email: string;
+            status: string;
+            error?: string;
+            errorType?: string;
+            messageId?: string;
+            response?: string;
+        }>;
+        recommendations?: string[];
+        workingHost?: string;
+        testDomain?: string;
+    } | null>(null);
     const [emailData, setEmailData] = useState({
         to: 'arda.basoglu@dgmgumruk.com',
         subject: 'Poste.io Test Email',
-        message: 'This is a test email from the Verida application using Poste.io server setup on Coolify.'
+        message: 'This is a test email from the Verida application using Poste.io server setup on Coolify.',
+        testRecipient: 'test@verida.dgmgumruk.com' // Alternative test recipient
     });
 
     const handleConnectionTest = async () => {
@@ -43,6 +58,32 @@ export default function TestEmailPage() {
             console.error('Connection test error:', error);
         } finally {
             setIsTestingConnection(false);
+        }
+    };
+
+    const handleDomainTest = async () => {
+        setIsTestingDomains(true);
+        try {
+            const response = await fetch('/api/test-email-domains', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ testDomain: 'verida.dgmgumruk.com' }),
+            });
+            const result = await response.json();
+            setDomainResults(result);
+
+            if (response.ok) {
+                toast.success('Domain test completed');
+            } else {
+                toast.error('Domain test failed');
+            }
+        } catch (error) {
+            toast.error('Failed to run domain test');
+            console.error('Domain test error:', error);
+        } finally {
+            setIsTestingDomains(false);
         }
     };
 
@@ -105,6 +146,22 @@ export default function TestEmailPage() {
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setEmailData({ ...emailData, to: e.target.value })}
                                 placeholder="recipient@example.com"
                             />
+                            <div className="mt-2 space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEmailData({ ...emailData, to: emailData.testRecipient })}
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Use test@verida.dgmgumruk.com
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEmailData({ ...emailData, to: 'no-reply@verida.dgmgumruk.com' })}
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Use no-reply@verida.dgmgumruk.com
+                                </button>
+                            </div>
                         </div>
 
                         <div>
@@ -140,6 +197,15 @@ export default function TestEmailPage() {
                             </Button>
 
                             <Button
+                                onClick={handleDomainTest}
+                                disabled={isTestingDomains}
+                                variant="outline"
+                                className="w-full"
+                            >
+                                {isTestingDomains ? 'Testing Domains...' : 'Test Email Domains'}
+                            </Button>
+
+                            <Button
                                 onClick={handleSendTest}
                                 disabled={isLoading}
                                 className="w-full"
@@ -164,16 +230,49 @@ export default function TestEmailPage() {
                         </div>
                     )}
 
+                    {/* Domain Test Results */}
+                    {domainResults && (
+                        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+                            <h4 className="font-semibold mb-2">Domain Test Results</h4>
+                            <div className="space-y-2 text-sm">
+                                {domainResults.results?.map((test, index: number) => (
+                                    <div key={index} className={`p-2 rounded ${test.status === 'SUCCESS' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
+                                        <div><strong>{test.email}</strong> - {test.status}</div>
+                                        {test.error && <div className="text-xs text-red-600 dark:text-red-400">{test.error}</div>}
+                                        {test.errorType && <div className="text-xs">Type: {test.errorType}</div>}
+                                    </div>
+                                ))}
+                                {domainResults.recommendations && domainResults.recommendations.length > 0 && (
+                                    <div className="mt-3 p-2 bg-blue-100 dark:bg-blue-900 rounded">
+                                        <div className="font-semibold text-blue-800 dark:text-blue-200">Recommendations:</div>
+                                        {domainResults.recommendations.map((rec: string, index: number) => (
+                                            <div key={index} className="text-xs text-blue-700 dark:text-blue-300">• {rec}</div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Instructions */}
                     <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
                         <h4 className="font-semibold mb-2">Test Instructions</h4>
                         <ul className="text-sm space-y-1">
-                            <li>• Click &quot;Send Test Email&quot; to test the Poste.io configuration</li>
-                            <li>• The system will try multiple hostnames automatically</li>
+                            <li>• Click &quot;Test SMTP Connection&quot; first to verify connectivity</li>
+                            <li>• Try different recipient addresses if you get 550 errors</li>
+                            <li>• Use addresses from domains configured in Poste.io</li>
                             <li>• Check the recipient&apos;s inbox for the test email</li>
-                            <li>• Monitor the browser console for connection details</li>
-                            <li>• If all hosts fail, check your Coolify network configuration</li>
+                            <li>• Monitor the browser console for detailed error messages</li>
                         </ul>
+
+                        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border-l-4 border-yellow-400">
+                            <h5 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-1">Common Issues:</h5>
+                            <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+                                <li>• <strong>550 Error:</strong> Recipient domain not configured in Poste.io</li>
+                                <li>• <strong>DNS Error:</strong> Services not on same Docker network</li>
+                                <li>• <strong>Connection Timeout:</strong> Poste.io service not running</li>
+                            </ul>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
