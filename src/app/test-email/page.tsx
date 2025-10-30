@@ -117,9 +117,9 @@ export default function TestEmailPage() {
         <div className="container mx-auto py-8 px-4">
             <Card className="max-w-2xl mx-auto">
                 <CardHeader>
-                    <CardTitle>Poste.io Email Server Test</CardTitle>
+                    <CardTitle>Postfix Email Server Test</CardTitle>
                     <CardDescription>
-                        Test your Poste.io server configuration on Coolify
+                        Test your Postfix server configuration on Coolify
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -127,7 +127,7 @@ export default function TestEmailPage() {
                     <div className="bg-muted p-4 rounded-lg">
                         <h3 className="font-semibold mb-2">Server Configuration</h3>
                         <div className="space-y-2 text-sm">
-                            <div><strong>Hosts (tried in order):</strong> posteio, 10.0.1.11</div>
+                            <div><strong>Hosts (tried in order):</strong> postfix, postfix.coolify, 10.0.1.11</div>
                             <div><strong>Port:</strong> 25</div>
                             <div><strong>Encryption:</strong> None</div>
                             <div><strong>From Name:</strong> VERIDA</div>
@@ -160,6 +160,20 @@ export default function TestEmailPage() {
                                     className="text-xs text-blue-600 hover:text-blue-800 underline"
                                 >
                                     Use no-reply@verida.dgmgumruk.com
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEmailData({ ...emailData, to: 'postmaster@verida.dgmgumruk.com' })}
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Use postmaster@verida.dgmgumruk.com
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEmailData({ ...emailData, to: 'test@gmail.com' })}
+                                    className="text-xs text-orange-600 hover:text-orange-800 underline"
+                                >
+                                    Try external (test@gmail.com)
                                 </button>
                             </div>
                         </div>
@@ -260,18 +274,28 @@ export default function TestEmailPage() {
                         <ul className="text-sm space-y-1">
                             <li>• Click &quot;Test SMTP Connection&quot; first to verify connectivity</li>
                             <li>• Try different recipient addresses if you get 550 errors</li>
-                            <li>• Use addresses from domains configured in Poste.io</li>
+                            <li>• For Postfix: configure relay or local delivery</li>
                             <li>• Check the recipient&apos;s inbox for the test email</li>
                             <li>• Monitor the browser console for detailed error messages</li>
                         </ul>
 
-                        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border-l-4 border-yellow-400">
-                            <h5 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-1">Common Issues:</h5>
-                            <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
-                                <li>• <strong>550 Error:</strong> Recipient domain not configured in Poste.io</li>
-                                <li>• <strong>DNS Error:</strong> Services not on same Docker network</li>
-                                <li>• <strong>Connection Timeout:</strong> Poste.io service not running</li>
+                        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded border-l-4 border-red-400">
+                            <h5 className="font-semibold text-red-800 dark:text-red-200 mb-1">550 Error - Postfix Configuration:</h5>
+                            <ul className="text-xs text-red-700 dark:text-red-300 space-y-1">
+                                <li>• <strong>Option 1:</strong> Configure RELAYHOST to use external SMTP</li>
+                                <li>• <strong>Option 2:</strong> Set up local delivery for verida.dgmgumruk.com</li>
+                                <li>• <strong>Option 3:</strong> Configure Postfix as relay for external domains</li>
+                                <li>• <strong>Current:</strong> MAILNAME=verida.dgmgumruk.com, RELAYHOST=empty</li>
                             </ul>
+                        </div>
+
+                        <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-400">
+                            <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-1">Postfix Solutions:</h5>
+                            <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                                <div><strong>Quick Fix:</strong> Set RELAYHOST to external SMTP (Gmail, SendGrid, etc.)</div>
+                                <div><strong>Local Fix:</strong> Configure virtual domains in Postfix main.cf</div>
+                                <div><strong>Test Fix:</strong> Try sending to external email (Gmail, Yahoo)</div>
+                            </div>
                         </div>
                     </div>
                 </CardContent>

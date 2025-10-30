@@ -13,11 +13,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Create transporter with Poste.io configuration
+        // Create transporter with Postfix configuration
         // Try different possible hostnames for Coolify deployment
         const possibleHosts = [
-            'posteio',
-            '10.0.1.11',
+            process.env.SMTP_HOST || 'postfix',
+            'postfix',
+            'postfix.coolify',
+            '10.0.1.11', // Keep your working IP
+            'localhost',
+            '127.0.0.1'
         ];
 
         let transporter;
