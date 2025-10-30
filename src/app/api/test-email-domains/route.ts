@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
         // Try to connect to the SMTP server first
         const possibleHosts = [
-            'postfix'
+            'cgoggg8skwwok0osg0cs80c0-141956804892'
         ];
 
         let workingTransporter = null;

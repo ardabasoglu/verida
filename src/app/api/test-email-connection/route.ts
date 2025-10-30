@@ -7,7 +7,7 @@ const execAsync = promisify(exec);
 export async function GET() {
     try {
         const hosts = [
-            'postfix'
+            'cgoggg8skwwok0osg0cs80c0-141956804892'
         ];
 
         const results = [];

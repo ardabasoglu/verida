@@ -127,7 +127,7 @@ export default function TestEmailPage() {
                     <div className="bg-muted p-4 rounded-lg">
                         <h3 className="font-semibold mb-2">Server Configuration</h3>
                         <div className="space-y-2 text-sm">
-                            <div><strong>Host:</strong> postfix</div>
+                            <div><strong>Host:</strong> cgoggg8skwwok0osg0cs80c0-141956804892</div>
                             <div><strong>Port:</strong> 25</div>
                             <div><strong>Encryption:</strong> None</div>
                             <div><strong>From Name:</strong> VERIDA</div>

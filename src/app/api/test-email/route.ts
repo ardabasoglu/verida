@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
         // Create transporter with Postfix configuration
         const possibleHosts = [
-            'postfix'
+            'cgoggg8skwwok0osg0cs80c0-141956804892'
         ];
 
         let transporter;
