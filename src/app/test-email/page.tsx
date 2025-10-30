@@ -170,6 +170,13 @@ export default function TestEmailPage() {
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={() => setEmailData({ ...emailData, to: 'arda.basoglu@dgmgumruk.com' })}
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Use arda.basoglu@dgmgumruk.com
+                                </button>
+                                <button
+                                    type="button"
                                     onClick={() => setEmailData({ ...emailData, to: 'test@gmail.com' })}
                                     className="text-xs text-orange-600 hover:text-orange-800 underline"
                                 >
@@ -231,11 +238,11 @@ export default function TestEmailPage() {
 
                     {/* Connection Test Results */}
                     {connectionResults && (
-                        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+                        <div className="bg-muted/50 p-4 rounded-lg border">
                             <h4 className="font-semibold mb-2">Connection Test Results</h4>
                             <div className="space-y-2 text-sm">
                                 {connectionResults.connectionTests?.map((test, index: number) => (
-                                    <div key={index} className={`p-2 rounded ${test.status === 'SUCCESS' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
+                                    <div key={index} className={`p-2 rounded border ${test.status === 'SUCCESS' ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'}`}>
                                         <div><strong>{test.host}</strong> - {test.status}</div>
                                         <div>Port 25: {test.port25}</div>
                                     </div>
@@ -246,18 +253,18 @@ export default function TestEmailPage() {
 
                     {/* Domain Test Results */}
                     {domainResults && (
-                        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+                        <div className="bg-muted/50 p-4 rounded-lg border">
                             <h4 className="font-semibold mb-2">Domain Test Results</h4>
                             <div className="space-y-2 text-sm">
                                 {domainResults.results?.map((test, index: number) => (
-                                    <div key={index} className={`p-2 rounded ${test.status === 'SUCCESS' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
+                                    <div key={index} className={`p-2 rounded border ${test.status === 'SUCCESS' ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'}`}>
                                         <div><strong>{test.email}</strong> - {test.status}</div>
                                         {test.error && <div className="text-xs text-red-600 dark:text-red-400">{test.error}</div>}
                                         {test.errorType && <div className="text-xs">Type: {test.errorType}</div>}
                                     </div>
                                 ))}
                                 {domainResults.recommendations && domainResults.recommendations.length > 0 && (
-                                    <div className="mt-3 p-2 bg-blue-100 dark:bg-blue-900 rounded">
+                                    <div className="mt-3 p-2 bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-800 rounded">
                                         <div className="font-semibold text-blue-800 dark:text-blue-200">Recommendations:</div>
                                         {domainResults.recommendations.map((rec: string, index: number) => (
                                             <div key={index} className="text-xs text-blue-700 dark:text-blue-300">• {rec}</div>
@@ -269,7 +276,7 @@ export default function TestEmailPage() {
                     )}
 
                     {/* Instructions */}
-                    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
+                    <div className="bg-muted/50 p-4 rounded-lg border">
                         <h4 className="font-semibold mb-2">Test Instructions</h4>
                         <ul className="text-sm space-y-1">
                             <li>• Click &quot;Test SMTP Connection&quot; first to verify connectivity</li>
@@ -279,22 +286,22 @@ export default function TestEmailPage() {
                             <li>• Monitor the browser console for detailed error messages</li>
                         </ul>
 
-                        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded border-l-4 border-red-400">
-                            <h5 className="font-semibold text-red-800 dark:text-red-200 mb-1">550 Error - Postfix Configuration:</h5>
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-800 rounded border-l-4 border-l-red-400">
+                            <h5 className="font-semibold text-red-800 dark:text-red-200 mb-1">454 Relay Access Denied - Fix Required:</h5>
                             <ul className="text-xs text-red-700 dark:text-red-300 space-y-1">
-                                <li>• <strong>Option 1:</strong> Configure RELAYHOST to use external SMTP</li>
-                                <li>• <strong>Option 2:</strong> Set up local delivery for verida.dgmgumruk.com</li>
-                                <li>• <strong>Option 3:</strong> Configure Postfix as relay for external domains</li>
-                                <li>• <strong>Current:</strong> MAILNAME=verida.dgmgumruk.com, RELAYHOST=empty</li>
+                                <li>• <strong>Issue:</strong> Postfix is rejecting relay from your app (10.0.1.10)</li>
+                                <li>• <strong>Quick Fix:</strong> Add &quot;mynetworks = 127.0.0.0/8 10.0.0.0/8&quot; to main.cf</li>
+                                <li>• <strong>Better Fix:</strong> Configure RELAYHOST with external SMTP</li>
+                                <li>• <strong>Current:</strong> Connection works, but relay denied</li>
                             </ul>
                         </div>
 
-                        <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border-l-4 border-blue-400">
-                            <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-1">Postfix Solutions:</h5>
+                        <div className="mt-2 p-3 bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-800 rounded border-l-4 border-l-blue-400">
+                            <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-1">Postfix Configuration Commands:</h5>
                             <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-                                <div><strong>Quick Fix:</strong> Set RELAYHOST to external SMTP (Gmail, SendGrid, etc.)</div>
-                                <div><strong>Local Fix:</strong> Configure virtual domains in Postfix main.cf</div>
-                                <div><strong>Test Fix:</strong> Try sending to external email (Gmail, Yahoo)</div>
+                                <div><strong>1. Allow Network:</strong> <code className="bg-blue-100 border border-blue-300 dark:bg-blue-900 dark:border-blue-700 px-1 rounded">echo &quot;mynetworks = 127.0.0.0/8 10.0.0.0/8&quot; &gt;&gt; /etc/postfix/main.cf</code></div>
+                                <div><strong>2. Reload:</strong> <code className="bg-blue-100 border border-blue-300 dark:bg-blue-900 dark:border-blue-700 px-1 rounded">postfix reload</code></div>
+                                <div><strong>3. Test:</strong> Try sending email again</div>
                             </div>
                         </div>
                     </div>
