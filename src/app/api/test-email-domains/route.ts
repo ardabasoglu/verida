@@ -19,8 +19,7 @@ export async function POST(request: NextRequest) {
 
         // Try to connect to the SMTP server first
         const possibleHosts = [
-            'posteio',
-            '10.0.1.11',
+            'postfix'
         ];
 
         let workingTransporter = null;
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
                         rejectUnauthorized: false
                     }
                 };
-                
+
                 const transporter = nodemailer.createTransport(transportConfig);
                 await transporter.verify();
                 workingTransporter = transporter;
@@ -86,8 +85,8 @@ export async function POST(request: NextRequest) {
                         email: testEmail,
                         status: 'FAILED',
                         error: errorMessage,
-                        errorType: errorMessage.includes('550') ? 'RECIPIENT_REJECTED' : 
-                                  errorMessage.includes('relay') ? 'RELAY_DENIED' : 'OTHER'
+                        errorType: errorMessage.includes('550') ? 'RECIPIENT_REJECTED' :
+                            errorMessage.includes('relay') ? 'RELAY_DENIED' : 'OTHER'
                     });
                 }
             } catch (error) {
@@ -126,7 +125,7 @@ function generateRecommendations(results: Array<{
     error?: string;
 }>) {
     const recommendations = [];
-    
+
     const successCount = results.filter(r => r.status === 'SUCCESS').length;
     const recipientRejected = results.filter(r => r.errorType === 'RECIPIENT_REJECTED').length;
     const relayDenied = results.filter(r => r.errorType === 'RELAY_DENIED').length;

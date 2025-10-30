@@ -7,8 +7,7 @@ const execAsync = promisify(exec);
 export async function GET() {
     try {
         const hosts = [
-            'posteio',
-            '10.0.1.11',
+            'postfix'
         ];
 
         const results = [];
