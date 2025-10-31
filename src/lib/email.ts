@@ -66,7 +66,7 @@ class EmailService {
     try {
       if (this.resend) {
         console.log('🚀 Using Resend API...')
-        
+
         const emailPayload = {
           from: fromAddress,
           to: recipients,
@@ -74,7 +74,7 @@ class EmailService {
           html: html || text || '',
           text: text || undefined,
         }
-        
+
         console.log('📤 Resend payload:', {
           from: emailPayload.from,
           to: emailPayload.to,
@@ -84,29 +84,28 @@ class EmailService {
         })
 
         const result = await this.resend.emails.send(emailPayload)
-        
+
         console.log('📥 Resend response:', {
           success: !result.error,
           data: result.data,
           error: result.error,
         })
-        
+
         // Check for errors in the response
         if (result.error) {
           console.error('❌ Resend API error details:', {
             message: result.error.message,
             name: result.error.name,
-            stack: result.error.stack,
           })
           throw new Error(`Resend API error: ${result.error.message}`)
         }
-        
+
         console.log('✅ Email sent successfully via Resend!')
         console.log(`   Email ID: ${result.data?.id}`)
         return result
       } else if (this.transporter) {
         console.log('📧 Using SMTP transporter...')
-        
+
         const mailOptions = {
           from: fromAddress,
           to: recipients.join(', '),
@@ -114,7 +113,7 @@ class EmailService {
           html: html || text,
           text: text || undefined,
         }
-        
+
         console.log('📤 SMTP payload:', {
           from: mailOptions.from,
           to: mailOptions.to,
@@ -124,10 +123,10 @@ class EmailService {
         })
 
         const result = await this.transporter.sendMail(mailOptions)
-        
+
         console.log('✅ Email sent successfully via SMTP!')
         console.log(`   Message ID: ${result.messageId}`)
-        
+
         if (process.env.NODE_ENV === 'development') {
           const previewUrl = nodemailer.getTestMessageUrl(result)
           console.log(`📧 Preview URL: ${previewUrl}`)
@@ -139,10 +138,14 @@ class EmailService {
         throw new Error(errorMsg)
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      const errorName = error instanceof Error ? error.name : 'Error'
+      const errorStack = error instanceof Error ? error.stack : undefined
+
       console.error('❌ Failed to send email:', {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
+        message: errorMessage,
+        name: errorName,
+        stack: errorStack,
         provider: this.getProvider(),
         fromAddress,
         recipients,
@@ -156,7 +159,7 @@ class EmailService {
     console.log('🔐 Sending verification email...')
     console.log(`   Email: ${email}`)
     console.log(`   URL: ${url}`)
-    
+
     const subject = 'Sign in to Verida'
     const html = `
       <!DOCTYPE html>
@@ -232,10 +235,10 @@ class EmailService {
     console.log('🎉 Sending welcome email...')
     console.log(`   Email: ${email}`)
     console.log(`   Name: ${name || 'not provided'}`)
-    
+
     const subject = 'Welcome to Verida!'
     const displayName = name || email.split('@')[0]
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
