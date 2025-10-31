@@ -7,9 +7,18 @@ class EmailService {
   private transporter: nodemailer.Transporter | null = null
 
   constructor() {
+    console.log('🔧 Initializing EmailService...')
+    console.log(`   NODE_ENV: ${process.env.NODE_ENV}`)
+    console.log(`   RESEND_API_KEY present: ${!!process.env.RESEND_API_KEY}`)
+    console.log(`   EMAIL_SERVER_HOST present: ${!!process.env.EMAIL_SERVER_HOST}`)
+    console.log(`   EMAIL_FROM: ${process.env.EMAIL_FROM}`)
+
     if (process.env.NODE_ENV === 'production' && process.env.RESEND_API_KEY) {
+      console.log('🚀 Setting up Resend for production...')
       this.resend = new Resend(process.env.RESEND_API_KEY)
+      console.log('✅ Resend client initialized')
     } else if (process.env.EMAIL_SERVER_HOST && process.env.EMAIL_SERVER_USER) {
+      console.log('📧 Setting up SMTP for development...')
       this.transporter = nodemailer.createTransport({
         host: process.env.EMAIL_SERVER_HOST,
         port: Number(process.env.EMAIL_SERVER_PORT) || 587,
@@ -19,6 +28,14 @@ class EmailService {
           pass: process.env.EMAIL_SERVER_PASSWORD,
         },
       })
+      console.log('✅ SMTP transporter initialized')
+    } else {
+      console.warn('⚠️  No email service configured!')
+      console.log('   Available environment variables:')
+      console.log(`   - NODE_ENV: ${process.env.NODE_ENV}`)
+      console.log(`   - RESEND_API_KEY: ${process.env.RESEND_API_KEY ? 'SET' : 'NOT SET'}`)
+      console.log(`   - EMAIL_SERVER_HOST: ${process.env.EMAIL_SERVER_HOST || 'NOT SET'}`)
+      console.log(`   - EMAIL_SERVER_USER: ${process.env.EMAIL_SERVER_USER || 'NOT SET'}`)
     }
   }
 
@@ -36,51 +53,110 @@ class EmailService {
     from?: string
   }) {
     const fromAddress = from || process.env.EMAIL_FROM || 'noreply@verida.dgmgumruk.com'
+    const recipients = Array.isArray(to) ? to : [to]
+
+    console.log('📧 Attempting to send email...')
+    console.log(`   From: ${fromAddress}`)
+    console.log(`   To: ${recipients.join(', ')}`)
+    console.log(`   Subject: ${subject}`)
+    console.log(`   Provider: ${this.getProvider()}`)
+    console.log(`   HTML content length: ${html?.length || 0}`)
+    console.log(`   Text content length: ${text?.length || 0}`)
 
     try {
       if (this.resend) {
-        // Use Resend for production
-        const result = await this.resend.emails.send({
+        console.log('🚀 Using Resend API...')
+        
+        const emailPayload = {
           from: fromAddress,
-          to: Array.isArray(to) ? to : [to],
+          to: recipients,
           subject,
           html: html || text || '',
           text: text || undefined,
+        }
+        
+        console.log('📤 Resend payload:', {
+          from: emailPayload.from,
+          to: emailPayload.to,
+          subject: emailPayload.subject,
+          hasHtml: !!emailPayload.html,
+          hasText: !!emailPayload.text,
+        })
+
+        const result = await this.resend.emails.send(emailPayload)
+        
+        console.log('📥 Resend response:', {
+          success: !result.error,
+          data: result.data,
+          error: result.error,
         })
         
         // Check for errors in the response
         if (result.error) {
-          console.error('❌ Resend API error:', result.error)
+          console.error('❌ Resend API error details:', {
+            message: result.error.message,
+            name: result.error.name,
+            stack: result.error.stack,
+          })
           throw new Error(`Resend API error: ${result.error.message}`)
         }
         
-        console.log('✅ Email sent via Resend:', result.data?.id)
+        console.log('✅ Email sent successfully via Resend!')
+        console.log(`   Email ID: ${result.data?.id}`)
         return result
       } else if (this.transporter) {
-        // Use SMTP (Ethereal Email) for development
-        const result = await this.transporter.sendMail({
+        console.log('📧 Using SMTP transporter...')
+        
+        const mailOptions = {
           from: fromAddress,
-          to: Array.isArray(to) ? to.join(', ') : to,
+          to: recipients.join(', '),
           subject,
           html: html || text,
           text: text || undefined,
-        })
+        }
         
-        console.log('✅ Email sent via SMTP:', result.messageId)
+        console.log('📤 SMTP payload:', {
+          from: mailOptions.from,
+          to: mailOptions.to,
+          subject: mailOptions.subject,
+          hasHtml: !!mailOptions.html,
+          hasText: !!mailOptions.text,
+        })
+
+        const result = await this.transporter.sendMail(mailOptions)
+        
+        console.log('✅ Email sent successfully via SMTP!')
+        console.log(`   Message ID: ${result.messageId}`)
+        
         if (process.env.NODE_ENV === 'development') {
-          console.log('📧 Preview URL:', nodemailer.getTestMessageUrl(result))
+          const previewUrl = nodemailer.getTestMessageUrl(result)
+          console.log(`📧 Preview URL: ${previewUrl}`)
         }
         return result
       } else {
-        throw new Error('No email service configured')
+        const errorMsg = 'No email service configured - neither Resend nor SMTP is available'
+        console.error('❌', errorMsg)
+        throw new Error(errorMsg)
       }
     } catch (error) {
-      console.error('❌ Failed to send email:', error)
+      console.error('❌ Failed to send email:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        provider: this.getProvider(),
+        fromAddress,
+        recipients,
+        subject,
+      })
       throw error
     }
   }
 
   async sendVerificationEmail(email: string, url: string) {
+    console.log('🔐 Sending verification email...')
+    console.log(`   Email: ${email}`)
+    console.log(`   URL: ${url}`)
+    
     const subject = 'Sign in to Verida'
     const html = `
       <!DOCTYPE html>
@@ -143,6 +219,7 @@ class EmailService {
       If you didn't request this, you can safely ignore this email.
     `
 
+    console.log('📤 Sending verification email with sendEmail method...')
     return this.sendEmail({
       to: email,
       subject,
@@ -152,6 +229,10 @@ class EmailService {
   }
 
   async sendWelcomeEmail(email: string, name?: string) {
+    console.log('🎉 Sending welcome email...')
+    console.log(`   Email: ${email}`)
+    console.log(`   Name: ${name || 'not provided'}`)
+    
     const subject = 'Welcome to Verida!'
     const displayName = name || email.split('@')[0]
     

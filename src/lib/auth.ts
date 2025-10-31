@@ -25,7 +25,18 @@ if (emailService.getProvider() !== 'none') {
       from: process.env.EMAIL_FROM || 'noreply@verida.dgmgumruk.com',
       // Use our custom email service for sending
       sendVerificationRequest: async ({ identifier: email, url }) => {
-        await emailService.sendVerificationEmail(email, url)
+        console.log('🔐 NextAuth requesting verification email...')
+        console.log(`   Email: ${email}`)
+        console.log(`   URL: ${url}`)
+        console.log(`   Provider: ${emailService.getProvider()}`)
+        
+        try {
+          await emailService.sendVerificationEmail(email, url)
+          console.log('✅ Verification email sent successfully via NextAuth')
+        } catch (error) {
+          console.error('❌ Failed to send verification email via NextAuth:', error)
+          throw error
+        }
       },
     })
   )
@@ -153,10 +164,12 @@ export const authOptions: NextAuthOptions = {
         })
 
         // Send welcome email
+        console.log('🎉 Sending welcome email for new user...')
         try {
           await emailService.sendWelcomeEmail(user.email, user.name || undefined)
+          console.log('✅ Welcome email sent successfully')
         } catch (error) {
-          console.error('Failed to send welcome email:', error)
+          console.error('❌ Failed to send welcome email:', error)
         }
       }
     },

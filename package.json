@@ -30,6 +30,8 @@
     "setup:ethereal": "node scripts/setup-ethereal-email.mjs",
     "setup:resend": "node scripts/setup-resend.mjs",
     "test:email": "node scripts/test-email-service.mjs",
+    "test:resend": "node scripts/test-resend-debug.mjs",
+    "validate:resend": "node scripts/validate-resend-setup.mjs",
     "test:integration": "tsx scripts/integration-test.ts",
     "deploy": "bash scripts/deploy.sh",
     "deploy:test": "bash scripts/deploy.sh test",
