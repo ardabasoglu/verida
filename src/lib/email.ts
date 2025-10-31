@@ -35,7 +35,7 @@ class EmailService {
     text?: string
     from?: string
   }) {
-    const fromAddress = from || process.env.EMAIL_FROM || 'noreply@dgmgumruk.com'
+    const fromAddress = from || process.env.EMAIL_FROM || 'noreply@verida.dgmgumruk.com'
 
     try {
       if (this.resend) {
@@ -47,6 +47,12 @@ class EmailService {
           html: html || text || '',
           text: text || undefined,
         })
+        
+        // Check for errors in the response
+        if (result.error) {
+          console.error('❌ Resend API error:', result.error)
+          throw new Error(`Resend API error: ${result.error.message}`)
+        }
         
         console.log('✅ Email sent via Resend:', result.data?.id)
         return result

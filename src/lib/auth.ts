@@ -22,7 +22,7 @@ if (emailService.getProvider() !== 'none') {
           pass: process.env.EMAIL_SERVER_PASSWORD || 'pass',
         },
       },
-      from: process.env.EMAIL_FROM || 'noreply@dgmgumruk.com',
+      from: process.env.EMAIL_FROM || 'noreply@verida.dgmgumruk.com',
       // Use our custom email service for sending
       sendVerificationRequest: async ({ identifier: email, url }) => {
         await emailService.sendVerificationEmail(email, url)
