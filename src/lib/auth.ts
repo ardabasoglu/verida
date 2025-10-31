@@ -6,22 +6,27 @@ import { prisma } from '@/lib/prisma'
 import { UserRole } from '@prisma/client'
 import type { Adapter } from 'next-auth/adapters'
 import { ActivityLogger, ActivityAction, ResourceType } from '@/lib/activity-logger'
+import { emailService } from '@/lib/email'
 
 const providers = []
 
-// Add email provider if SMTP is configured
-if (process.env.EMAIL_SERVER_HOST && process.env.EMAIL_SERVER_USER) {
+// Add email provider if email service is configured
+if (emailService.getProvider() !== 'none') {
   providers.push(
     EmailProvider({
       server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
+        host: process.env.EMAIL_SERVER_HOST || 'localhost',
+        port: Number(process.env.EMAIL_SERVER_PORT) || 587,
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+          user: process.env.EMAIL_SERVER_USER || 'user',
+          pass: process.env.EMAIL_SERVER_PASSWORD || 'pass',
         },
       },
-      from: process.env.EMAIL_FROM,
+      from: process.env.EMAIL_FROM || 'noreply@dgmgumruk.com',
+      // Use our custom email service for sending
+      sendVerificationRequest: async ({ identifier: email, url }) => {
+        await emailService.sendVerificationEmail(email, url)
+      },
     })
   )
 }
@@ -146,6 +151,13 @@ export const authOptions: NextAuthOptions = {
             registrationMethod: 'email',
           },
         })
+
+        // Send welcome email
+        try {
+          await emailService.sendWelcomeEmail(user.email, user.name || undefined)
+        } catch (error) {
+          console.error('Failed to send welcome email:', error)
+        }
       }
     },
     async signIn({ user, account, isNewUser }) {
