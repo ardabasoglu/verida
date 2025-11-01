@@ -36,7 +36,14 @@ console.log('\n🔐 Permission Tests:')
 const testRoles = [UserRole.MEMBER, UserRole.EDITOR, UserRole.ADMIN, UserRole.SYSTEM_ADMIN]
 
 testRoles.forEach(role => {
-    const mockSession = { user: { role }, expires: '' } as any
+    const mockSession = { 
+        user: { 
+            id: 'test-id', 
+            email: 'test@dgmgumruk.com', 
+            role 
+        }, 
+        expires: '' 
+    }
     console.log(`\n${formatRole(role)} permissions:`)
     console.log(`  - Can edit content: ${canEditContent(mockSession)}`)
     console.log(`  - Is admin: ${isAdmin(role)}`)

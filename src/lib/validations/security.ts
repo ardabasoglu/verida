@@ -71,7 +71,7 @@ export const secureHtmlSchema = z
         return iframeMatches.every(iframe => {
           // Check if iframe src is from YouTube
           const srcMatch = iframe.match(/src\s*=\s*["']([^"']+)["']/i);
-          if (srcMatch) {
+          if (srcMatch && srcMatch[1]) {
             const src = srcMatch[1];
             return src.startsWith('https://www.youtube.com/embed/');
           }

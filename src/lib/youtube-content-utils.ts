@@ -11,12 +11,14 @@ export function extractYouTubeVideosFromContent(content: string): YouTubeVideoIn
   
   while ((match = videoRegex.exec(content)) !== null) {
     const videoId = match[1];
-    videos.push({
-      videoId,
-      url: `https://www.youtube.com/watch?v=${videoId}`,
-      embedUrl: `https://www.youtube.com/embed/${videoId}`,
-      thumbnailUrl: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-    });
+    if (videoId) {
+      videos.push({
+        videoId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        thumbnailUrl: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+      });
+    }
   }
   
   // Also try alternative pattern in case attributes are in different order
@@ -25,12 +27,14 @@ export function extractYouTubeVideosFromContent(content: string): YouTubeVideoIn
     let altMatch;
     while ((altMatch = altRegex.exec(content)) !== null) {
       const videoId = altMatch[1];
-      videos.push({
-        videoId,
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-        embedUrl: `https://www.youtube.com/embed/${videoId}`,
-        thumbnailUrl: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-      });
+      if (videoId) {
+        videos.push({
+          videoId,
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          embedUrl: `https://www.youtube.com/embed/${videoId}`,
+          thumbnailUrl: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+        });
+      }
     }
   }
   
@@ -41,7 +45,7 @@ export function extractYouTubeVideosFromContent(content: string): YouTubeVideoIn
  * Remove YouTube video embeds from content for editing
  */
 export function cleanContentFromYouTubeEmbeds(content: string): string {
-  return content.replace(/<div class="youtube-video-embed"[^>]*>.*?<\/div>/gs, '').trim();
+  return content.replace(/<div class="youtube-video-embed"[^>]*>.*?<\/div>/g, '').trim();
 }
 
 /**
