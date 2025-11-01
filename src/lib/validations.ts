@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { 
-  secureStringSchema, 
-  secureHtmlSchema, 
+import {
+  secureStringSchema,
+  secureHtmlSchema,
   secureDgmgumrukEmailSchema,
   secureSearchQuerySchema,
   securePaginationSchema,
@@ -25,10 +25,10 @@ export const userSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const createUserSchema = userSchema.omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const createUserSchema = userSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
 });
 
 export const updateUserSchema = createUserSchema.partial();
@@ -46,11 +46,11 @@ export const pageSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const createPageSchema = pageSchema.omit({ 
-  id: true, 
-  authorId: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const createPageSchema = pageSchema.omit({
+  id: true,
+  authorId: true,
+  createdAt: true,
+  updatedAt: true
 }).extend({
   fileIds: z.array(secureIdSchema).max(5, 'En fazla 5 dosya eklenebilir').optional()
 });
@@ -70,10 +70,10 @@ export const fileSchema = z.object({
   createdAt: z.date(),
 });
 
-export const createFileSchema = fileSchema.omit({ 
-  id: true, 
-  uploadedById: true, 
-  createdAt: true 
+export const createFileSchema = fileSchema.omit({
+  id: true,
+  uploadedById: true,
+  createdAt: true
 });
 
 // Comment validation schemas with enhanced security
@@ -85,10 +85,10 @@ export const commentSchema = z.object({
   createdAt: z.date(),
 });
 
-export const createCommentSchema = commentSchema.omit({ 
-  id: true, 
-  userId: true, 
-  createdAt: true 
+export const createCommentSchema = commentSchema.omit({
+  id: true,
+  userId: true,
+  createdAt: true
 });
 
 // Notification validation schemas with enhanced security
@@ -102,10 +102,10 @@ export const notificationSchema = z.object({
   createdAt: z.date(),
 });
 
-export const createNotificationSchema = notificationSchema.omit({ 
-  id: true, 
-  read: true, 
-  createdAt: true 
+export const createNotificationSchema = notificationSchema.omit({
+  id: true,
+  read: true,
+  createdAt: true
 });
 
 // Authentication schemas (NextAuth uses email only)

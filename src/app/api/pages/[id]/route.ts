@@ -127,11 +127,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }
 
-    // Check permissions - only admin or system admin can edit pages
-    if (!canAccessPagesManagement(session)) {
+    // Check permissions - author, editor, admin, or system admin can edit pages
+    const canEdit =
+      existingPage.authorId === session.user.id ||
+      ['EDITOR', 'ADMIN', 'SYSTEM_ADMIN'].includes(session.user.role);
+
+    if (!canEdit) {
       return NextResponse.json(
         {
-          error: 'Admin access required to edit pages.',
+          error: 'You do not have permission to edit this page.',
         },
         { status: 403 }
       );
