@@ -114,9 +114,16 @@ export const authOptions: NextAuthOptions = {
       
       return true
     },
-    async session({ session }) {
-      // Add user role and id to session
-      if (session.user?.email) {
+    async session({ session, token }) {
+      // Add user role and id to session from JWT token
+      if (token) {
+        session.user.id = token.id as string
+        session.user.role = token.role as UserRole
+        session.user.name = token.name as string
+      }
+      
+      // Fallback: fetch from database if not in token
+      if (!session.user.role && session.user?.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: session.user.email },
           select: { id: true, role: true, name: true }
@@ -131,12 +138,28 @@ export const authOptions: NextAuthOptions = {
       
       return session
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // Add user info to JWT token
       if (user) {
         token.id = user.id
         token.role = (user as { role: UserRole }).role
+        token.name = user.name
       }
+      
+      // Refresh user data from database on update or if missing
+      if (trigger === 'update' || (!token.role && token.email)) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email as string },
+          select: { id: true, role: true, name: true }
+        })
+        
+        if (dbUser) {
+          token.id = dbUser.id
+          token.role = dbUser.role
+          token.name = dbUser.name
+        }
+      }
+      
       return token
     },
   },

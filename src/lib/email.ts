@@ -160,24 +160,24 @@ class EmailService {
     console.log(`   Email: ${email}`)
     console.log(`   URL: ${url}`)
 
-    const subject = 'Sign in to Verida'
+    const subject = 'Verida\'ya Giriş Yapın'
     const html = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Sign in to Verida</title>
+          <title>Verida'ya Giriş Yapın</title>
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to Verida</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">Verida'ya Hoş Geldiniz</h1>
           </div>
           
           <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
-            <h2 style="color: #333; margin-top: 0;">Sign in to your account</h2>
+            <h2 style="color: #333; margin-top: 0;">Hesabınıza giriş yapın</h2>
             <p style="font-size: 16px; margin-bottom: 25px;">
-              Click the button below to sign in to your Verida account. This link will expire in 24 hours.
+              Verida hesabınıza giriş yapmak için aşağıdaki butona tıklayın. Bu bağlantı 24 saat içinde geçerliliğini yitirecektir.
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
@@ -191,12 +191,12 @@ class EmailService {
                         font-size: 16px; 
                         display: inline-block;
                         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-                Sign In to Verida
+                Verida'ya Giriş Yap
               </a>
             </div>
             
             <p style="font-size: 14px; color: #666; margin-top: 25px;">
-              If the button doesn't work, copy and paste this link into your browser:
+              Buton çalışmıyorsa, bu bağlantıyı kopyalayıp tarayıcınıza yapıştırın:
             </p>
             <p style="font-size: 14px; color: #667eea; word-break: break-all; background: #f1f3f4; padding: 10px; border-radius: 5px;">
               ${url}
@@ -204,22 +204,22 @@ class EmailService {
           </div>
           
           <div style="text-align: center; font-size: 12px; color: #666;">
-            <p>This email was sent to ${email}. If you didn't request this, you can safely ignore it.</p>
-            <p>© ${new Date().getFullYear()} Verida. All rights reserved.</p>
+            <p>Bu e-posta ${email} adresine gönderilmiştir. Eğer bu isteği siz yapmadıysanız, güvenle görmezden gelebilirsiniz.</p>
+            <p>© ${new Date().getFullYear()} Verida. Tüm hakları saklıdır.</p>
           </div>
         </body>
       </html>
     `
 
     const text = `
-      Sign in to Verida
+      Verida'ya Giriş Yapın
       
-      Click the link below to sign in to your account:
+      Hesabınıza giriş yapmak için aşağıdaki bağlantıya tıklayın:
       ${url}
       
-      This link will expire in 24 hours.
+      Bu bağlantı 24 saat içinde geçerliliğini yitirecektir.
       
-      If you didn't request this, you can safely ignore this email.
+      Eğer bu isteği siz yapmadıysanız, bu e-postayı güvenle görmezden gelebilirsiniz.
     `
 
     console.log('📤 Sending verification email with sendEmail method...')
@@ -236,7 +236,7 @@ class EmailService {
     console.log(`   Email: ${email}`)
     console.log(`   Name: ${name || 'not provided'}`)
 
-    const subject = 'Welcome to Verida!'
+    const subject = 'Verida\'ya Hoş Geldiniz!'
     const displayName = name || email.split('@')[0]
 
     const html = `
@@ -245,55 +245,55 @@ class EmailService {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Verida</title>
+          <title>Verida'ya Hoş Geldiniz</title>
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to Verida!</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">Verida'ya Hoş Geldiniz!</h1>
           </div>
           
           <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
-            <h2 style="color: #333; margin-top: 0;">Hello ${displayName}! 👋</h2>
+            <h2 style="color: #333; margin-top: 0;">Merhaba ${displayName}! 👋</h2>
             <p style="font-size: 16px; margin-bottom: 20px;">
-              Welcome to Verida! We're excited to have you on board. Your account has been successfully created and you're ready to get started.
+              Verida'ya hoş geldiniz! Sizi aramızda görmekten çok mutluyuz. Hesabınız başarıyla oluşturuldu ve başlamaya hazırsınız.
             </p>
             
             <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #667eea;">What's next?</h3>
+              <h3 style="margin-top: 0; color: #667eea;">Sırada ne var?</h3>
               <ul style="margin: 0; padding-left: 20px;">
-                <li>Explore the platform and its features</li>
-                <li>Complete your profile setup</li>
-                <li>Connect with other members</li>
-                <li>Start collaborating on projects</li>
+                <li>Platformu ve özelliklerini keşfedin</li>
+                <li>Profil kurulumunuzu tamamlayın</li>
+                <li>Diğer üyelerle bağlantı kurun</li>
+                <li>Projelerde işbirliği yapmaya başlayın</li>
               </ul>
             </div>
             
             <p style="font-size: 14px; color: #666; margin-top: 25px;">
-              If you have any questions or need help getting started, don't hesitate to reach out to our support team.
+              Herhangi bir sorunuz varsa veya başlarken yardıma ihtiyacınız olursa, destek ekibimizle iletişime geçmekten çekinmeyin.
             </p>
           </div>
           
           <div style="text-align: center; font-size: 12px; color: #666;">
-            <p>© ${new Date().getFullYear()} Verida. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} Verida. Tüm hakları saklıdır.</p>
           </div>
         </body>
       </html>
     `
 
     const text = `
-      Welcome to Verida!
+      Verida'ya Hoş Geldiniz!
       
-      Hello ${displayName}!
+      Merhaba ${displayName}!
       
-      Welcome to Verida! We're excited to have you on board. Your account has been successfully created and you're ready to get started.
+      Verida'ya hoş geldiniz! Sizi aramızda görmekten çok mutluyuz. Hesabınız başarıyla oluşturuldu ve başlamaya hazırsınız.
       
-      What's next?
-      - Explore the platform and its features
-      - Complete your profile setup
-      - Connect with other members
-      - Start collaborating on projects
+      Sırada ne var?
+      - Platformu ve özelliklerini keşfedin
+      - Profil kurulumunuzu tamamlayın
+      - Diğer üyelerle bağlantı kurun
+      - Projelerde işbirliği yapmaya başlayın
       
-      If you have any questions or need help getting started, don't hesitate to reach out to our support team.
+      Herhangi bir sorunuz varsa veya başlarken yardıma ihtiyacınız olursa, destek ekibimizle iletişime geçmekten çekinmeyin.
     `
 
     return this.sendEmail({

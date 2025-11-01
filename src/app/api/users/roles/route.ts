@@ -1,12 +1,22 @@
 import { NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth-utils'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { canAccessAdminRoutes } from '@/lib/auth-utils'
 import { UserRole } from '@prisma/client'
 
 // GET /api/users/roles - Get available user roles (Admin only)
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Require admin role
-    await requireAdmin()
+    if (!canAccessAdminRoutes(session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const roles = [
       {

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { requireAdmin } from '@/lib/auth-utils'
+import { canAccessAdminRoutes } from '@/lib/auth-utils'
 import { updateUserSchema, userIdSchema } from '@/lib/validations/user'
 import { z } from 'zod'
 
@@ -10,8 +12,16 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Require admin role
-    await requireAdmin()
+    if (!canAccessAdminRoutes(session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     // Validate user ID
     const resolvedParams = await params
@@ -61,8 +71,16 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Require admin role
-    const currentUser = await requireAdmin()
+    if (!canAccessAdminRoutes(session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     // Validate user ID
     const resolvedParams = await params
@@ -85,7 +103,7 @@ export async function PUT(
     }
 
     // Prevent self-role modification for safety
-    if (currentUser.id === id && validatedData.role) {
+    if (session.user.id === id && validatedData.role) {
       return NextResponse.json(
         { error: 'Cannot modify your own role' },
         { status: 403 }
@@ -110,7 +128,7 @@ export async function PUT(
     // Log activity
     await prisma.activityLog.create({
       data: {
-        userId: currentUser.id,
+        userId: session.user.id,
         action: 'USER_UPDATED_BY_ADMIN',
         resourceType: 'User',
         resourceId: updatedUser.id,
@@ -149,8 +167,16 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Require admin role
-    const currentUser = await requireAdmin()
+    if (!canAccessAdminRoutes(session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     // Validate user ID
     const resolvedParams = await params
@@ -170,7 +196,7 @@ export async function DELETE(
     }
 
     // Prevent self-deletion
-    if (currentUser.id === id) {
+    if (session.user.id === id) {
       return NextResponse.json(
         { error: 'Cannot delete your own account' },
         { status: 403 }
@@ -185,7 +211,7 @@ export async function DELETE(
     // Log activity
     await prisma.activityLog.create({
       data: {
-        userId: currentUser.id,
+        userId: session.user.id,
         action: 'USER_DELETED_BY_ADMIN',
         resourceType: 'User',
         resourceId: id,

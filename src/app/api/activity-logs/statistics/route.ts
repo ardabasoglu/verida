@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { ActivityLogger, ActivityAction } from '@/lib/activity-logger';
 import { UserRole } from '@prisma/client';
 import { logger } from '@/lib/logger';
+import { canAccessAdminRoutes } from '@/lib/auth-utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,10 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Only admins and system admins can view activity statistics
-    if (
-      session.user.role !== UserRole.ADMIN &&
-      session.user.role !== UserRole.SYSTEM_ADMIN
-    ) {
+    if (!canAccessAdminRoutes(session)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

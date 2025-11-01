@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { ActivityLogger, ActivityAction } from '@/lib/activity-logger';
 import { UserRole } from '@prisma/client';
 import { logger } from '@/lib/logger';
+import { canAccessAdminRoutes } from '@/lib/auth-utils';
 
 export async function GET(
   request: NextRequest,
@@ -19,11 +20,7 @@ export async function GET(
     const { userId } = await params;
 
     // Users can view their own activity, admins can view any user's activity
-    if (
-      session.user.id !== userId &&
-      session.user.role !== UserRole.ADMIN &&
-      session.user.role !== UserRole.SYSTEM_ADMIN
-    ) {
+    if (session.user.id !== userId && !canAccessAdminRoutes(session)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

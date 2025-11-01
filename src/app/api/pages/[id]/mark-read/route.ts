@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ActivityLogger, ActivityAction, ResourceType } from '@/lib/activity-logger';
 import { ApiResponse } from '@/types';
+import { canAccessUnreadPages } from '@/lib/auth-utils';
 
 export async function POST(
   request: NextRequest,
@@ -16,6 +17,14 @@ export async function POST(
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Check role-based access - ADMIN, SYSTEM_ADMIN, EDITOR, and MEMBER can access unread pages
+    if (!canAccessUnreadPages(session)) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied to mark pages as read' },
+        { status: 403 }
       );
     }
 

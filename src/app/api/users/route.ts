@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { requireAdmin } from '@/lib/auth-utils'
+import { canAccessAdminRoutes } from '@/lib/auth-utils'
 import { UserRole } from '@prisma/client'
 import { createUserSchema, userSearchSchema } from '@/lib/validations/user'
 import { z } from 'zod'
@@ -8,8 +10,16 @@ import { z } from 'zod'
 // GET /api/users - List all users (Admin only)
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Require admin role
-    await requireAdmin()
+    if (!canAccessAdminRoutes(session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const { searchParams } = new URL(request.url)
     
@@ -21,13 +31,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: {
-      role?: UserRole;
-      OR?: Array<{
-        name?: { contains: string; mode: 'insensitive' };
-        email?: { contains: string; mode: 'insensitive' };
-      }>;
-    } = {}
+    const where: any = {}
     
     if (role) {
       where.role = role
@@ -95,8 +99,16 @@ export async function GET(request: NextRequest) {
 // POST /api/users - Create new user (Admin only)
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // Require admin role
-    const currentUser = await requireAdmin()
+    if (!canAccessAdminRoutes(session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const body = await request.json()
     const validatedData = createUserSchema.parse(body)
@@ -135,7 +147,7 @@ export async function POST(request: NextRequest) {
     // Log activity
     await prisma.activityLog.create({
       data: {
-        userId: currentUser.id,
+        userId: session.user.id,
         action: 'USER_CREATED_BY_ADMIN',
         resourceType: 'User',
         resourceId: newUser.id,

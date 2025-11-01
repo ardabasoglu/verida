@@ -25,8 +25,8 @@ export function Header({ showSidebar = false }: HeaderProps) {
             {/* Left Side - Brand */}
             <div className="flex items-center">
               <Link href="/" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-                <h1 className="text-lg font-semibold">Verida</h1>
-                <span className="text-sm text-muted-foreground hidden md:inline">Kurumsal Bilgi Uygulaması</span>
+                <h1 className="text-lg font-semibold">VERIDA</h1>
+                <span className="text-sm text-muted-foreground hidden md:inline">Kurumsal Bilgi Yönetim Platformu</span>
               </Link>
             </div>
 

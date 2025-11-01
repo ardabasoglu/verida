@@ -30,6 +30,7 @@ const navigationItems: NavItem[] = [
     name: 'Sayfalar',
     href: '/pages',
     icon: DocumentTextIcon,
+    roles: ['SYSTEM_ADMIN', 'ADMIN'],
   },
   {
     name: 'Arama',
@@ -40,7 +41,7 @@ const navigationItems: NavItem[] = [
     name: 'Yeni Sayfa',
     href: '/pages/create',
     icon: PlusIcon,
-    roles: ['SYSTEM_ADMIN', 'ADMIN', 'EDITOR'],
+    roles: ['SYSTEM_ADMIN', 'ADMIN'],
   },
   {
     name: 'Aktivite Günlükleri',

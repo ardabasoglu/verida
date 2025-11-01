@@ -17,6 +17,7 @@ import {
 import { getRequestMetadata } from '@/lib/request-utils';
 import { PageQueries } from '@/lib/query-optimizer';
 import { CacheInvalidation } from '@/lib/cache';
+import { canAccessPagesManagement, canViewPublishedPages } from '@/lib/auth-utils';
 
 /**
  * GET /api/pages - List pages with filtering and pagination (Optimized)
@@ -29,6 +30,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
+      );
+    }
+
+    // Check role-based access - all authenticated users can view published pages
+    if (!canViewPublishedPages(session)) {
+      return NextResponse.json(
+        { error: 'Access denied to view pages' },
+        { status: 403 }
       );
     }
 
@@ -95,11 +104,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has editor role or higher
-    const userRole = session.user.role;
-    if (!['EDITOR', 'ADMIN', 'SYSTEM_ADMIN'].includes(userRole)) {
+    // Check role-based access - only ADMIN and SYSTEM_ADMIN can create pages
+    if (!canAccessPagesManagement(session)) {
       return NextResponse.json(
-        { error: 'Editor role or higher required to create pages' },
+        { error: 'Admin access required to create pages' },
         { status: 403 }
       );
     }

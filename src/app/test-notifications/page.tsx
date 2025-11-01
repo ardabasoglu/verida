@@ -41,12 +41,12 @@ export default function TestNotificationsPage() {
     <AuthGuard>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Bildirim Sistemi Testi</h1>
-        
+
         <div className="space-y-4">
           <p className="text-gray-600">
             Bu sayfa bildirim sistemini test etmek için kullanılır.
           </p>
-          
+
           <Button
             onClick={handleCreateTestNotification}
             disabled={loading}
@@ -54,7 +54,7 @@ export default function TestNotificationsPage() {
           >
             {loading ? 'Oluşturuluyor...' : 'Test Bildirimi Oluştur'}
           </Button>
-          
+
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <h2 className="text-lg font-semibold mb-2">Test Adımları:</h2>
             <ol className="list-decimal list-inside space-y-2 text-sm">

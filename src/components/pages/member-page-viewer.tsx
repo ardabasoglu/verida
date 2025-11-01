@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { PageWithRelations } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Calendar, User, MessageCircle, Paperclip } from 'lucide-react';
+import { ArrowLeft, Calendar, User, MessageCircle, Paperclip, Edit } from 'lucide-react';
 import FileAttachments from '@/components/files/file-attachments';
 import CommentSection from '@/components/comments/comment-section';
 import DOMPurify from 'dompurify';
@@ -32,6 +32,15 @@ const PAGE_TYPE_COLORS = {
 export default function MemberPageViewer({ page }: MemberPageViewerProps) {
     const { data: session } = useSession();
     const [isClient, setIsClient] = useState(false);
+
+    // Check if user can edit this page
+    const canEdit = useMemo(() => {
+        if (!session?.user) return false;
+        return (
+            page.authorId === session.user.id ||
+            ['ADMIN', 'SYSTEM_ADMIN', 'EDITOR'].includes(session.user.role)
+        );
+    }, [session?.user, page.authorId]);
 
     useEffect(() => {
         setIsClient(true);
@@ -84,14 +93,23 @@ export default function MemberPageViewer({ page }: MemberPageViewerProps) {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-8">
-            {/* Back Button */}
-            <div className="flex items-center">
+            {/* Navigation and Actions */}
+            <div className="flex items-center justify-between">
                 <Link href="/">
                     <Button variant="ghost" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                         <ArrowLeft className="h-4 w-4" />
                         Ana Sayfaya Dön
                     </Button>
                 </Link>
+
+                {canEdit && (
+                    <Link href={`/view/${page.id}/edit`}>
+                        <Button variant="outline" className="flex items-center gap-2">
+                            <Edit className="h-4 w-4" />
+                            Düzenle
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {/* Page Header */}

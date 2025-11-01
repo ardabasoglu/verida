@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ContentType } from '@prisma/client'
+import { canAccessPagesManagement } from '@/lib/auth-utils'
 
 /**
  * GET /api/pages/stats - Get page statistics
@@ -15,6 +16,14 @@ export async function GET() {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
+      )
+    }
+
+    // Check role-based access - only ADMIN and SYSTEM_ADMIN can access pages stats
+    if (!canAccessPagesManagement(session)) {
+      return NextResponse.json(
+        { error: 'Admin access required to view pages statistics' },
+        { status: 403 }
       )
     }
 

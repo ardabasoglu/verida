@@ -153,7 +153,8 @@ export default function PageForm({
         const result = await response.json();
 
         if (result.success) {
-          router.push(`/pages/${result.data.id}`);
+          // Redirect to view page after editing
+          router.push(`/view/${result.data.id}`);
         } else {
           throw new Error(result.error || 'Bir hata oluştu');
         }

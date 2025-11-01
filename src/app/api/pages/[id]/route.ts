@@ -12,6 +12,7 @@ import {
 } from '@/lib/activity-logger';
 import { PageQueries } from '@/lib/query-optimizer';
 import { CacheInvalidation } from '@/lib/cache';
+import { canAccessPagesManagement, canViewPublishedPages } from '@/lib/auth-utils';
 
 /**
  * GET /api/pages/[id] - Get a single page by ID
@@ -27,6 +28,14 @@ export async function GET(
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
+      );
+    }
+
+    // Check role-based access - all authenticated users can view published pages
+    if (!canViewPublishedPages(session)) {
+      return NextResponse.json(
+        { error: 'Access denied to view pages' },
+        { status: 403 }
       );
     }
 
@@ -118,16 +127,11 @@ export async function PUT(
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }
 
-    // Check permissions - only author, admin, or system admin can edit
-    const canEdit =
-      existingPage.authorId === session.user.id ||
-      ['ADMIN', 'SYSTEM_ADMIN'].includes(session.user.role);
-
-    if (!canEdit) {
+    // Check permissions - only admin or system admin can edit pages
+    if (!canAccessPagesManagement(session)) {
       return NextResponse.json(
         {
-          error:
-            'Permission denied. Only the author or administrators can edit this page.',
+          error: 'Admin access required to edit pages.',
         },
         { status: 403 }
       );
@@ -308,16 +312,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Page not found' }, { status: 404 });
     }
 
-    // Check permissions - only author, admin, or system admin can delete
-    const canDelete =
-      existingPage.authorId === session.user.id ||
-      ['ADMIN', 'SYSTEM_ADMIN'].includes(session.user.role);
-
-    if (!canDelete) {
+    // Check permissions - only admin or system admin can delete pages
+    if (!canAccessPagesManagement(session)) {
       return NextResponse.json(
         {
-          error:
-            'Permission denied. Only the author or administrators can delete this page.',
+          error: 'Admin access required to delete pages.',
         },
         { status: 403 }
       );

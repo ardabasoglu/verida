@@ -3,10 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { MainLayout } from '@/components/layout/main-layout';
-import { PageStats } from '@/components/pages/page-stats';
-import { canAccessAdminRoutes } from '@/lib/auth-utils';
+import { canAccessUnreadPages } from '@/lib/auth-utils';
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
+export default async function UnreadPagesLayout({ children }: { children: ReactNode }) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -18,20 +17,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     redirect('/unauthorized');
   }
 
-  // Check role-based access - only ADMIN and SYSTEM_ADMIN can access admin routes
-  if (!canAccessAdminRoutes(session)) {
+  // Check if user can access unread pages (EDITOR and MEMBER roles included)
+  if (!canAccessUnreadPages(session)) {
     redirect('/unauthorized');
   }
 
-  // Sidebar content for all /admin pages
-  const sidebarContent = (
-    <div className="space-y-6">
-      <PageStats />
-    </div>
-  );
-
   return (
-    <MainLayout showSidebar={true} sidebarContent={sidebarContent}>
+    <MainLayout showSidebar={false}>
       {children}
     </MainLayout>
   );

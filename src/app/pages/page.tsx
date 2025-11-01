@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import PageList from '@/components/pages/page-list';
 import { prisma } from '@/lib/prisma';
 import { PageHeader } from '@/components/layout/page-header';
+import { canAccessPagesManagement } from '@/lib/auth-utils';
 
 export const metadata: Metadata = {
   title: 'Sayfalar - Verida',
@@ -23,6 +24,11 @@ export default async function PagesPage() {
 
   // Check domain restriction
   if (!session.user.email?.endsWith('@dgmgumruk.com')) {
+    redirect('/unauthorized');
+  }
+
+  // Check role-based access - only ADMIN and SYSTEM_ADMIN can access /pages
+  if (!canAccessPagesManagement(session)) {
     redirect('/unauthorized');
   }
 
