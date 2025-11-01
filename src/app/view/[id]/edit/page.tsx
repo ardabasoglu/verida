@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import PageForm from '@/components/forms/page-form';
+import { extractYouTubeVideosFromContent, cleanContentFromYouTubeEmbeds } from '@/lib/youtube-content-utils';
 
 interface EditViewPageProps {
   params: Promise<{
@@ -74,20 +75,23 @@ export default async function EditViewPage({ params }: EditViewPageProps) {
     redirect('/unauthorized');
   }
 
+  console.log('📄 Original page content:', page.content);
+  const youtubeVideos = extractYouTubeVideosFromContent(page.content || '');
+  console.log('🎬 Extracted YouTube videos:', youtubeVideos);
+  const cleanedContent = cleanContentFromYouTubeEmbeds(page.content || '');
+  console.log('🧹 Cleaned content:', cleanedContent);
+
   return (
     <PageForm
       initialData={{
         id: page.id,
         title: page.title,
-        content: page.content || '',
+        content: cleanedContent,
         pageType: page.pageType,
         tags: page.tags,
+        youtubeVideos,
       }}
       isEditing={true}
-      onSubmit={async (_data) => {
-        'use server';
-        // This will be handled by the form's default API call
-      }}
     />
   );
 }

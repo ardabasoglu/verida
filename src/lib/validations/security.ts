@@ -56,11 +56,31 @@ export const secureHtmlSchema = z
   .refine(
     (value) => {
       // Allow basic HTML tags but block dangerous ones
+      // Exception: Allow iframe tags for YouTube videos
       const dangerousTags =
-        /<(script|iframe|object|embed|form|input|meta|link|style)\b/gi;
+        /<(script|object|embed|form|input|meta|link|style)\b/gi;
       return !dangerousTags.test(value);
     },
     { message: 'Content contains dangerous HTML tags' }
+  )
+  .refine(
+    (value) => {
+      // Check iframe tags - only allow YouTube iframes
+      const iframeMatches = value.match(/<iframe[^>]*>/gi);
+      if (iframeMatches) {
+        return iframeMatches.every(iframe => {
+          // Check if iframe src is from YouTube
+          const srcMatch = iframe.match(/src\s*=\s*["']([^"']+)["']/i);
+          if (srcMatch) {
+            const src = srcMatch[1];
+            return src.startsWith('https://www.youtube.com/embed/');
+          }
+          return false;
+        });
+      }
+      return true;
+    },
+    { message: 'Only YouTube iframe embeds are allowed' }
   )
   .refine(
     (value) => {

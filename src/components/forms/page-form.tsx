@@ -21,6 +21,7 @@ import { YouTubeVideoManager } from '@/components/pages/youtube-video-manager';
 import TagInput from '@/components/forms/tag-input';
 import { FormSection, FormFieldGroup, FormField } from '@/components/forms/form-section';
 import { type YouTubeVideoInfo } from '@/lib/youtube-utils';
+import { embedYouTubeVideosIntoContent } from '@/lib/youtube-content-utils';
 
 interface AttachedFile {
   id: string;
@@ -112,7 +113,9 @@ export default function PageForm({
         newErrors.title = 'Başlık gereklidir';
       }
 
-      if (!formData.content.trim()) {
+      // Check if content is empty (accounting for HTML tags)
+      const contentText = formData.content.replace(/<[^>]*>/g, '').trim();
+      if (!contentText) {
         newErrors.content = 'İçerik gereklidir';
       }
 
@@ -132,8 +135,17 @@ export default function PageForm({
 
         const method = isEditing ? 'PUT' : 'POST';
 
+        const { youtubeVideos, ...apiData } = formData;
+        
+        // Embed YouTube videos into content
+        console.log('🎬 YouTube videos to embed:', youtubeVideos);
+        console.log('📝 Original content:', apiData.content);
+        const finalContent = embedYouTubeVideosIntoContent(apiData.content, youtubeVideos || []);
+        console.log('🎯 Final content with videos:', finalContent);
+        
         const requestData = {
-          ...formData,
+          ...apiData,
+          content: finalContent,
           fileIds: attachedFiles.map((file) => file.id),
         };
 
@@ -421,6 +433,7 @@ export default function PageForm({
                     size="lg"
                     loading={isSubmitting}
                     loadingText={isEditing ? 'Güncelleniyor...' : 'Oluşturuluyor...'}
+
                     className="
                         h-14 px-10 text-base font-bold 
                         bg-gradient-to-r from-primary via-primary to-primary/90
