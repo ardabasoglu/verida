@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { ActivityLogger, ActivityAction } from '@/lib/activity-logger';
-import { UserRole } from '@prisma/client';
+
 import { logger } from '@/lib/logger';
 import { canAccessAdminRoutes } from '@/lib/auth-utils';
 

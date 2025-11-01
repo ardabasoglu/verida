@@ -7,18 +7,14 @@
 
 import { UserRole } from '@prisma/client'
 import {
-    hasRole,
     isAdmin,
     canEditContent,
     canManageUsers,
     canAssignRole,
-    canDeleteUser,
-    getRoleLevel,
-    hasHigherOrEqualRole
+    getRoleLevel
 } from '../../src/lib/auth-utils'
 
 import {
-    getRoleDefinition,
     getAllRoles,
     getAssignableRoles,
     isRoleChangeAllowed,
@@ -40,10 +36,11 @@ console.log('\n🔐 Permission Tests:')
 const testRoles = [UserRole.MEMBER, UserRole.EDITOR, UserRole.ADMIN, UserRole.SYSTEM_ADMIN]
 
 testRoles.forEach(role => {
+    const mockSession = { user: { role }, expires: '' } as any
     console.log(`\n${formatRole(role)} permissions:`)
-    console.log(`  - Can edit content: ${canEditContent(role)}`)
+    console.log(`  - Can edit content: ${canEditContent(mockSession)}`)
     console.log(`  - Is admin: ${isAdmin(role)}`)
-    console.log(`  - Can manage users: ${canManageUsers(role)}`)
+    console.log(`  - Can manage users: ${canManageUsers(mockSession)}`)
 })
 
 // Test role assignment permissions
@@ -53,6 +50,14 @@ testRoles.forEach(currentRole => {
     const assignableRoles = getAssignableRoles(currentRole)
     assignableRoles.forEach(assignableRole => {
         console.log(`  - ${assignableRole.label}`)
+    })
+    
+    // Test individual role assignment permissions
+    testRoles.forEach(targetRole => {
+        const canAssign = canAssignRole(currentRole, targetRole)
+        if (canAssign) {
+            console.log(`  ✓ Can assign ${formatRole(targetRole)}`)
+        }
     })
 })
 

@@ -6,7 +6,7 @@ import {
   ActivityAction,
   ResourceType,
 } from '@/lib/activity-logger';
-import { UserRole } from '@prisma/client';
+
 import { logger } from '@/lib/logger';
 import { canAccessAdminRoutes } from '@/lib/auth-utils';
 

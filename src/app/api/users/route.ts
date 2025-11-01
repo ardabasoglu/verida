@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { canAccessAdminRoutes } from '@/lib/auth-utils'
-import { UserRole } from '@prisma/client'
+
 import { createUserSchema, userSearchSchema } from '@/lib/validations/user'
 import { z } from 'zod'
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     
     if (role) {
       where.role = role

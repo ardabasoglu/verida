@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { canAccessAdminRoutes } from '@/lib/auth-utils'
 
 // GET /api/users/test - Simple test endpoint
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 

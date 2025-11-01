@@ -84,7 +84,7 @@ export default async function EditViewPage({ params }: EditViewPageProps) {
         tags: page.tags,
       }}
       isEditing={true}
-      onSubmit={async (data) => {
+      onSubmit={async (_data) => {
         'use server';
         // This will be handled by the form's default API call
       }}

@@ -20,7 +20,7 @@ export default async function AuthTestPage() {
       <div className="space-y-2">
         <div>Has Session: {hasSession ? 'Yes' : 'No'}</div>
         <div>Has User: {hasUser ? 'Yes' : 'No'}</div>
-        <div>User Role: "{userRole}"</div>
+        <div>User Role: &quot;{userRole}&quot;</div>
         <div>Can Access (function): {canAccess ? 'Yes' : 'No'}</div>
         <div>Manual Check: {manualCheck ? 'Yes' : 'No'}</div>
         
@@ -28,10 +28,10 @@ export default async function AuthTestPage() {
           <strong>Step by step debug:</strong>
           <div>1. session exists: {!!session ? 'Yes' : 'No'}</div>
           <div>2. session.user exists: {!!session?.user ? 'Yes' : 'No'}</div>
-          <div>3. session.user.role: "{session?.user?.role}"</div>
+          <div>3. session.user.role: &quot;{session?.user?.role}&quot;</div>
           <div>4. typeof role: {typeof session?.user?.role}</div>
-          <div>5. role === 'SYSTEM_ADMIN': {session?.user?.role === 'SYSTEM_ADMIN' ? 'Yes' : 'No'}</div>
-          <div>6. role === 'ADMIN': {session?.user?.role === 'ADMIN' ? 'Yes' : 'No'}</div>
+          <div>5. role === &apos;SYSTEM_ADMIN&apos;: {session?.user?.role === 'SYSTEM_ADMIN' ? 'Yes' : 'No'}</div>
+          <div>6. role === &apos;ADMIN&apos;: {session?.user?.role === 'ADMIN' ? 'Yes' : 'No'}</div>
         </div>
         
         {canAccess ? (

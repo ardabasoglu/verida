@@ -50,7 +50,7 @@ export async function withAdminAuth(
       );
     }
 
-    if (!canManageUsers(session.user.role)) {
+    if (!canManageUsers(session)) {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }

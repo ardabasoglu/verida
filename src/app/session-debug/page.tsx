@@ -56,14 +56,14 @@ export default async function SessionDebugPage() {
               <strong>Debug - session?.user exists:</strong> {session?.user ? 'Yes' : 'No'}
             </div>
             <div>
-              <strong>Debug - session.user.role value:</strong> "{session.user?.role}"
+              <strong>Debug - session.user.role value:</strong> &quot;{session.user?.role}&quot;
             </div>
             <div>
               <strong>Debug - role comparison:</strong> 
               <ul className="ml-4 mt-1">
-                <li>Role === 'ADMIN': {session.user?.role === 'ADMIN' ? 'Yes' : 'No'}</li>
-                <li>Role === 'SYSTEM_ADMIN': {session.user?.role === 'SYSTEM_ADMIN' ? 'Yes' : 'No'}</li>
-                <li>['ADMIN', 'SYSTEM_ADMIN'].includes(role): {['ADMIN', 'SYSTEM_ADMIN'].includes(session.user?.role as any) ? 'Yes' : 'No'}</li>
+                <li>Role === &apos;ADMIN&apos;: {session.user?.role === 'ADMIN' ? 'Yes' : 'No'}</li>
+                <li>Role === &apos;SYSTEM_ADMIN&apos;: {session.user?.role === 'SYSTEM_ADMIN' ? 'Yes' : 'No'}</li>
+                <li>[&apos;ADMIN&apos;, &apos;SYSTEM_ADMIN&apos;].includes(role): {['ADMIN', 'SYSTEM_ADMIN'].includes(session.user?.role as string) ? 'Yes' : 'No'}</li>
               </ul>
             </div>
           </>
